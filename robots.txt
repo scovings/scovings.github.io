@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /robots.txt
+Disallow: /404.html
+Disallow: /soon.html
+Disallow: /README.md
+Disallow: /test.html
+Disallow: /CNAME
+Allow: /index.html
+Allow: /ilerio.html
+Allow: /esg.html
