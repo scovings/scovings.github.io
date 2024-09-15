@@ -46,4 +46,12 @@ nav .logo i{
 
 nav .links{
     height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 66px;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 48px;
 }
