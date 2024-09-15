@@ -60,3 +60,15 @@ button{
     border-radius: 30px;
     transition: .4s ease;
 }
+button:hover{
+    background: #f30a0a;
+    color: white;
+    border: 2px sold #f30a0a;
+    box-shadow: 0 0 5px #f30a0a,
+                0 0 25px #f30a0a;
+    cursor: pointer;
+    transform: scale(1.1);
+}
+.cv{
+    margin-left: 0.5em;
+}
