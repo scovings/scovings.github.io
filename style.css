@@ -349,3 +349,7 @@ span{
 ::-webkit-scrollbar-track{
     background-color: var(--bg-color);
 }
+.services{
+    background: var(--bg-color);
+    color: black;
+}
