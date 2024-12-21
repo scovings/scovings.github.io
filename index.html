@@ -28,4 +28,22 @@
             };
             
             try {
-                const re
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                if (response.ok) {
+                    alert('Request sent successfully!');
+                } else {
+                    alert('Failed to send request.');
+                }
+            } catch (error) {
+                console.error('Error sending request:', error);
+                alert('An error occurred while sending the request.');
+            }
+        });
+    </script>
+</body>
+</html>
