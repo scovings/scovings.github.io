@@ -3,44 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scovings - Personal Website</title>
+    <title>Your Name | Super Cool Personal Website</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Dark/Light Mode Toggle -->
+    <div class="theme-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- Header Section -->
     <header>
-        <h1>Scovings</h1>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <h1>Your Name</h1>
+            <p>Web Developer | Designer | Cool Human</p>
+            <div class="social-links">
+                <a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/yourusername" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="https://twitter.com/yourusername" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+            <a href="#about" class="scroll-down">
+                <i class="fas fa-chevron-down"></i>
+            </a>
+        </div>
     </header>
-    
-    <section id="home">
-        <h2>Welcome to My Website!</h2>
-        <p>Explore my projects and games here.</p>
-        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2>About Me</h2>
+            <div class="about-content">
+                <p>Hey! I'm [Your Name], a [your role, e.g., web developer, designer, tech enthusiast] who loves building cool stuff. I enjoy turning ideas into reality through code and design. When I'm not coding, you can find me [your hobby, e.g., gaming, hiking, or drinking coffee].</p>
+                <img src="your-photo.jpg" alt="Your Photo" class="profile-photo">
+            </div>
+        </div>
     </section>
-    
+
+    <!-- Projects Section -->
     <section id="projects">
-        <h2>My Projects</h2>
-        <ul>
-            <li><a href="#">Project 1</a></li>
-            <li><a href="#">Project 2</a></li>
-            <li><a href="#">Project 3</a></li>
-        </ul>
+        <div class="container">
+            <h2>My Projects</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>Project 1</h3>
+                    <p>A brief description of your project. What it does, why it's cool, and what tech you used.</p>
+                    <a href="#" class="btn">View Project</a>
+                </div>
+                <div class="project-card">
+                    <h3>Project 2</h3>
+                    <p>Another awesome project you've worked on. Keep it short and sweet.</p>
+                    <a href="#" class="btn">View Project</a>
+                </div>
+                <div class="project-card">
+                    <h3>Project 3</h3>
+                    <p>Yet another cool project. Show off your skills and creativity!</p>
+                    <a href="#" class="btn">View Project</a>
+                </div>
+            </div>
+        </div>
     </section>
-    
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="container">
+            <h2>Skills</h2>
+            <div class="skills-list">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+                <span>React</span>
+                <span>Node.js</span>
+                <span>UI/UX Design</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
     <section id="contact">
-        <h2>Contact Me</h2>
-        <p>Reach out via email or social media.</p>
+        <div class="container">
+            <h2>Let's Connect</h2>
+            <p>If you want to collaborate, chat, or just say hi, feel free to reach out!</p>
+            <a href="mailto:your.email@example.com" class="btn">Email Me</a>
+        </div>
     </section>
-    
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Scovings. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2023 Your Name. Built with ❤️ and code.</p>
+        </div>
     </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
