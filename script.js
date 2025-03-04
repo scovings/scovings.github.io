@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const introText = "Welcome to My Projects";
+  const introText = "Scovings";
   let index = 0;
   const introElement = document.getElementById("intro");
 
