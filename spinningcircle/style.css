@@ -16,3 +16,9 @@ pre{
   justify-content: center;
   height: 100%;
 }
+
+@media (max-width: 600px) {  /* Apply this when screen width is 600px or less */
+  .donut-container {
+      font-size: 5px;  /* Smaller size for mobile */
+  }
+}
