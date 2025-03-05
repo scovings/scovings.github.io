@@ -1,95 +1,144 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: #121212;
-  color: white;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-  overflow-x: hidden;
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
 }
-h1 {
-  font-size: 3em;
-  color: #4caf50;
-}
-p {
-  font-size: 1.2em;
-  color: #bdbdbd;
-}
-a {
-  color: #4caf50;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
+
 header h1 {
-  font-size: 3.5em;
-  font-weight: 600;
-  margin-bottom: 30px;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #4caf50;
-  animation: fadeIn 1.5s ease-in-out;
+    font-size: 3em;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #4CAF50;
+    animation: fadeIn 1.5s ease-in-out;
 }
+
+/* Responsive Intro */
 .intro-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #121212;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 2em;
-  color: white;
-  opacity: 1;
-  transition: opacity 1.5s ease-in-out;
-  z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 2em;
+    color: white;
+    opacity: 1;
+    transition: opacity 1.5s ease-in-out;
+    z-index: 10;
+    padding: 20px;
 }
+
 .fade-out {
-  opacity: 0 !important;
-  pointer-events: none;
+    opacity: 0 !important;
+    pointer-events: none;
 }
+
 .intro {
-  font-size: 1.4em;
-  color: #bdbdbd;
-  max-width: 800px;
-  margin: 20px auto 50px;
-  line-height: 1.6;
-  animation: fadeIn 2s ease-in-out;
+    font-size: 1.2em;
+    color: #bdbdbd;
+    max-width: 800px;
+    margin: 20px auto 50px;
+    line-height: 1.6;
+    animation: fadeIn 2s ease-in-out;
 }
+
+/* Responsive Grid */
 .projects {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* This ensures 3 items per row */
-  gap: 40px;
-  max-width: 1000px;
-  margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
 }
+
 .project {
-  background: linear-gradient(135deg, #252525, #3a3a3a);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  position: relative;
-  overflow: hidden;
+    background: linear-gradient(135deg, #252525, #3a3a3a);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
 }
+
 .project:hover {
-  transform: scale(1.1);
-  box-shadow: 0 12px 30px rgba(0, 255, 100, 0.5);
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 255, 100, 0.5);
 }
+
 .project h2 {
-  font-size: 1.8em;
-  margin-bottom: 15px;
-  color: #4caf50;
+    font-size: 1.6em;
+    margin-bottom: 10px;
+    color: #4CAF50;
 }
+
 .project p {
-  font-size: 1.2em;
-  color: #bdbdbd;
+    font-size: 1em;
+    color: #bdbdbd;
+}
+
+.project a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 18px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.project a:hover {
+    background: #66bb6a;
+    transform: scale(1.1);
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.5em;
+    }
+
+    .intro-container {
+        font-size: 1.5em;
+    }
+
+    .projects {
+        grid-template-columns: 1fr; /* Single column on small screens */
+        padding: 10px;
+    }
+
+    .project {
+        padding: 20px;
+    }
+
+    .project h2 {
+        font-size: 1.4em;
+    }
+
+    .project p {
+        font-size: 1em;
+    }
 }
 .project a {
   display: inline-block;
