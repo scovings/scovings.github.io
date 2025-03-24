@@ -206,4 +206,34 @@ header h1 {
         height: 40px;
         margin-right: 10px;
     }
+
+}
+.category-buttons {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: background 0.3s;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: #66bb6a;
+}
+
+/* Hide projects by default and only show matching ones */
+.project {
+    display: none;
+}
+
+.project.show {
+    display: block;
 }

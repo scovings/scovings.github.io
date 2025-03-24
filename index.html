@@ -1,76 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
   <title>scovings</title>
 </head>
-
 <body>
   <header>
     <h1>SCOVINGS - MY PROJECTS</h1>
     <a href="https://github.com/scovings" target="_blank" class="github-banner">
       <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="GitHub Logo">
       <span>Check out my GitHub!</span>
-  </a>
+    </a>
   </header>
+
   <main>
     <div class="intro">
-      Welcome to my project showcase! Here, you'll find some of my favorite
-      creations, spanning different technologies and creative ideas. Click on
-      any project to learn more!
+      Welcome to my project showcase! Click a category below to filter projects.
     </div>
+
+    <!-- Category Filter Buttons -->
+    <div class="category-buttons">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="games">Games</button>
+      <button class="filter-btn" data-filter="dashboards">Dashboards</button>
+      <button class="filter-btn" data-filter="portfolios">Portfolios</button>
+      <button class="filter-btn" data-filter="others">Others</button>
+    </div>
+
+    <!-- Projects Grid -->
     <div class="projects">
-      <div class="project">
+      <div class="project" data-category="games">
+        <h2>Memory Game</h2>
+        <p>Multiple Shapes to keep your IQ Sharp.</p>
+        <a href="projects/memorygame/index.html">View Project</a>
+      </div>
+
+      <div class="project" data-category="others">
         <h2>ASCII Spinning Donut</h2>
         <p>ASCII Donut Animation using JavaScript.</p>
         <a href="projects/spinningcircle/circle.html">View Project</a>
       </div>
-      <div class="project">
+
+      <div class="project" data-category="others">
         <h2>Minimal Weather App</h2>
         <p>A simple weather app.</p>
         <a href="projects/minimweatherapp/index.html">View Project</a>
       </div>
-      <div class="project">
-        <h2>URL Shortener</h2>
-        <p>Shortens URL's to a tinyurl.</p>
-        <a href="projects/urlshortener/index.html">View Project</a>
-      </div>
-      <div class="project">
-        <h2>Snow Client</h2>
-        <p>A minecraft cheat that might beat hypixel watchdog.</p>
-        <a href="https://github.com/scovings/snowclientidkwhateverbruh">View Project</a>
-      </div>
-      <div class="project">
+
+      <div class="project" data-category="all">
         <h2>QR Code Generator</h2>
         <p>Generates a QR Code for anything.</p>
         <a href="projects/qrcodegen/index.html">View Project</a>
       </div>
-      <div class="project">
-        <h2>weatherio</h2>
-        <p>Displays the weather with a nice UI.</p>
-        <a href="projects/weatherio/index.html">View Project</a>
-      </div>
-      <div class="project">
-        <h2>iPhone</h2>
-        <p> with Dynamic Island Working.</p>
-        <a href="projects/iphone14dynamicisland/index.html">View Project</a>
-      </div>
-      <div class="project">
-        <h2>Memory Game</h2>
-        <p>Multiple Shapes to keep your IQ Sharp.</p>
-        <a href="projects/Memory Game/index.html">View Project</a>
-      </div>
-      <div class="project">
-        <h2>Crypto App</h2>
-        <p>Shows all the coins and their 24h volume.</p>
-        <a href="projects/crypto/index.html">View Project</a>
-      </div>
     </div>
   </main>
+
   <script src="script.js"></script>
 </body>
-
 </html>
