@@ -63,6 +63,20 @@
   </main>
 
   <script src="script.js"></script>
-  <div class="version-number">v1.0.0</div>
 </body>
+
+<!-- Version Number (Clickable) -->
+<div class="version-number" onclick="openUpdateLog()">v1.0.1</div>
+
+<!-- Update Log Popup -->
+<div id="update-log" class="update-log">
+    <div class="update-content">
+        <h3>Update Log</h3>
+        <ul>
+            <li><strong>v1.0.1</strong> - Added the Stunning Portfolio.</li>
+        </ul>
+        <button onclick="closeUpdateLog()" class="btn btn-warning mt-2">Close</button>
+    </div>
+</div>
+
 </html>

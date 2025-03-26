@@ -22,3 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show all projects by default
     document.querySelector(".filter-btn[data-filter='all']").click();
 });
+
+function openUpdateLog() {
+    document.getElementById("update-log").style.display = "block";
+}
+
+function closeUpdateLog() {
+    document.getElementById("update-log").style.display = "none";
+}
