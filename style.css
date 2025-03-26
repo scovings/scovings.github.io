@@ -283,7 +283,7 @@ header h1 {
 }
 
 .update-content button {
-    background-color: #66bb6a; /* Orange theme */
+    background-color: #66bb6a; /* Green theme */
     color: white;
     border: none;
     padding: 8px 15px;
@@ -294,7 +294,7 @@ header h1 {
 }
 
 .update-content button:hover {
-    background-color: #66bb6a75; /* Darker orange */
+    background-color: #66bb6a75; /* Darker Green */
     transform: scale(1.05);
 }
 
