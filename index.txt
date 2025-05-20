@@ -1,0 +1,162 @@
+This is a personal portfolio made by scovings
+
+this is used for me for premade stuff so i dont have to type it all at once
+
+
+
+#---------- HEADER ----------#
+
+alt = logo
+
+<span class="material-symbols-outlined dark" aria-hidden="true"> dark_mode </span>
+
+<span class="material-symbols-outlined light" aria-hidden="true"> light_mode </span>
+
+
+
+#---------- HERO ----------#
+
+alt = Daniel Tait
+
+Aspiring Software Engineer
+
+Daniel Tait
+
+Lorem ipsum dolor sit amet consectetur. Quam ut feugiat ut porta morbi lobortis tristique.
+
+<span class="material-symbols-outlined" aria-hidden="true"> mail </span>
+weedanieltait@gmail.com
+
+<span class="material-symbols-outlined" aria-hidden="true"> call </span>
++4407305294326
+
+
+
+#---------- ABOUT CARD ----------#
+
+About
+
+A passionate software engineer with a weak background in Computer Science.
+
+<span class="material-symbols-outlined" aria-hidden="true"> location_on </span>
+Glasgow, Scotland
+
+<span class="material-symbols-outlined" aria-hidden="true"> work </span>
+TechGulf Solutions
+
+<span class="material-symbols-outlined" aria-hidden="true"> captive_portal </span>
+https://example.com
+
+
+
+#---------- PRIMARY TAB ----------#
+
+Projects
+
+Resume
+
+Contact
+
+
+
+#---------- PROJECT ----------#
+
+alt = Pixstock - Stock Media App
+
+Web App
+Pixstock - Stock Media App
+
+alt = Cook.io - Recipe App
+
+Web App
+Cook.io - Recipe App
+
+alt = GitFinder - Github User Finder
+
+Web App
+GitFinder - Github User Finder
+
+alt = Weatherio - Live Weather App
+
+Web App
+Weatherio - Live Weather App
+
+alt = Tvflix - Netflix Clone 2.0
+
+Web App
+Tvflix - Netflix Clone 2.0
+
+alt = Travelia - Travel Website
+
+Website
+Travelia - Travel Website
+
+
+
+#---------- RESUME ----------#
+
+Experience
+
+Youtube Tutorials
+2023 - Present
+
+Assisted in watching the tutorial and copying and learning from it.
+
+Education
+
+Secondary School
+2023 - 2025
+
+Primary School
+2016 - 2023
+
+Skills and Technologies
+
+HTML5
+CSS3
+JavaScript
+React.js
+Node.js
+GitHub
+MongoDB
+VS Code
+
+
+
+
+#---------- CONTACT ----------#
+
+Contact Info
+
+<span class="material-symbols-outlined" aria-hidden="true"> mail </span>
+
+Mail Me
+weedanieltait@gmail.com
+
+<span class="material-symbols-outlined" aria-hidden="true"> call </span>
+
+Contact Me
++4407305294326
+
+<span class="material-symbols-outlined" aria-hidden="true"> location_on </span>
+
+Address
+Glasgow, Scotland
+
+Social Info
+
+Let’s Work Together.
+
+Name*
+Email*
+Subject
+Message*
+
+Send Message
+
+
+
+
+#---------- FOOTER ----------#
+
+Copyright 2025. All right reserved by scovings/danieltait
