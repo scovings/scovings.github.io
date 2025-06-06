@@ -3,61 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>scovings</title>
 </head>
-<body class="">
+<body>
+    <div class="grid-bg"></div>
+    <div class="matrix" id="matrix"></div>
 
-    <div class="container">
-
-        <nav class="navbar">
-            <div class="box theme">
-                <div class="item">
-                    <ion-icon name="sunny-outline"></ion-icon>
-                </div>
-            </div>
-            <div class="box nav">
-                <div class="item">
-                    <a href="#about">
-                        <ion-icon name="person-circle-outline"></ion-icon>
-                        <p>about</p>
-                    </a>
-                    <div class="divider rtl"></div>
-                </div>
-                <div class="item">
-                    <a href="#resume">
-                        <ion-icon name="file-tray-full-outline"></ion-icon>
-                        <p>resume</p>
-                    </a>
-                    <div class="divider rtl"></div>
-                </div>
-                <div class="item">
-                    <a href="#projects">
-                        <ion-icon name="layers-outline"></ion-icon>
-                        <p>projects</p>
-                    </a>
-                    <div class="divider rtl"></div>
-                </div>
-                <div class="item">
-                    <a href="#blogs">
-                        <ion-icon name="reader-outline"></ion-icon>
-                        <p>blogs</p>
-                    </a>
-                    <div class="divider rtl"></div>
-                </div>
-                <div class="item">
-                    <a href="#contact">
-                        <ion-icon name="paper-plane-outline"></ion-icon>
-                        <p>contact</p>
-                    </a>
-                </div>
-            </div>
-        </nav>
-        <div class="box profile">profile</div>
-        <div class="box content">content</div>
-
+    <div class="stats">
+        <div class="stat-line">
+            <span>Projects:</span>
+            <span class="stat-value">12</span>
+        </div>
+        <div class="stat-line">
+            <span>Commits:</span>
+            <span class="stat-value">2.3k</span>
+        </div>
+        <div class="stat-line">
+            <span>Lines:</span>
+            <span class="stat-value">150k+</span>
+        </div>
+        <div class="stat-line">
+            <span>Uptime:</span>
+            <span class="stat-value">12.231%</span>
+        </div>
     </div>
+
+    <header class="header">
+        <h1 class="name">Daniel Tait</h1>
+        <p class="role">Full-Stack Engineer</p>
+        <!-- <p class="bio">Building scalable applications with modern tech. Specialized in React, Node.js, and cloud architecture.</p> -->
+        <p class="bio">I love my sex toy</p>
+
+    </header>
+
+    <section class="projects">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-grid">
+
+            <div class="project">
+                <div class="project-header">
+                    <div class="project-icon">⚡</div>
+                    <h3 class="project-title">scovings.github.io</h3>
+                    <span class="project-status-offline">OFFLINE (TEST)</span>
+                    <span class="project-status-online">LIVE</span>
+                </div>
+                <p class="project-desc">My Portfolio (your here)</p>
+                <div class="tech-stack">
+                    <span class="tech">HTML</span>
+                    <span class="tech">CSS</span>
+                    <span class="tech">JS</span>
+                </div>
+                <div class="project-links">
+                    <a href="#" class="link primary">Demo</a>
+                    <a href="#" class="link">Code</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="script.js"></script>
     
 </body>
 </html>
