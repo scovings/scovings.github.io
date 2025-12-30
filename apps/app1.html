@@ -3,116 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <title>Dart Score Counter</title>
+
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #111827;
+            background: #0f172a;
             color: white;
             text-align: center;
         }
 
-        #board {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(
-                    circle,
-                    #16a34a 0%,
-                    #16a34a 5%,
-                    #000 5%,
-                    #000 10%,
-                    #dc2626 10%,
-                    #dc2626 15%,
-                    #000 15%,
-                    #000 50%,
-                    #6b7280 50%,
-                    #6b7280 100%
-            );
+        h1 {
+            margin: 10px 0;
+        }
+
+        select, button {
+            font-size: 16px;
+            padding: 6px 10px;
+            margin: 5px;
+        }
+
+        canvas {
+            display: block;
             margin: 20px auto;
-            position: relative;
+            background: #020617;
+            border-radius: 50%;
             cursor: crosshair;
         }
 
-        .scores {
-            max-width: 400px;
+        .players {
+            max-width: 420px;
             margin: auto;
         }
 
         .player {
+            background: #1e293b;
             padding: 10px;
-            margin: 5px;
+            margin: 6px;
             border-radius: 6px;
-            background: #1f2933;
         }
 
         .active {
-            border: 2px solid #22c55e;
+            border: 2px solid #facc15;
         }
 
-        button {
-            margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 16px;
-            cursor: pointer;
+        .info {
+            margin-top: 5px;
+            opacity: 0.9;
         }
     </style>
 </head>
+
 <body>
 
 <h1>🎯 Dart Score Counter</h1>
-<p>Click where the dart landed</p>
 
-<div id="board"></div>
+<select id="mode" onchange="resetGame()">
+    <option value="501">501 (Count Down)</option>
+    <option value="up">Count Up</option>
+    <option value="10turns">10 Turns High Score</option>
+</select>
 
-<div class="scores">
-    <div id="p0" class="player active">Player 1: <span>501</span></div>
-    <div id="p1" class="player">Player 2: <span>501</span></div>
-    <div id="p2" class="player">Player 3: <span>501</span></div>
+<div class="info" id="info"></div>
+
+<canvas id="board" width="420" height="420"></canvas>
+
+<div class="players">
+    <div id="p0" class="player active">Player 1: <span>0</span></div>
+    <div id="p1" class="player">Player 2: <span>0</span></div>
+    <div id="p2" class="player">Player 3: <span>0</span></div>
 </div>
 
-<button onclick="resetGame()">Reset Game</button>
+<button onclick="resetGame()">Reset</button>
 
 <script>
-    const board = document.getElementById("board");
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+    const size = canvas.width;
+    const center = size / 2;
+    const radius = center;
 
-    let scores = [501, 501, 501];
+    // Official dartboard order (clockwise from top)
+    const numbers = [
+        20, 1, 18, 4, 13,
+        6, 10, 15, 2, 17,
+        3, 19, 7, 16, 8,
+        11, 14, 9, 12, 5
+    ];
+
+    let scores = [0, 0, 0];
     let currentPlayer = 0;
-    let dartsThrown = 0;
+    let darts = 0;
+    let turns = [0, 0, 0];
 
-    const numbers = [20,1,18,4,13,6,10,15,2,17,3,19,7,16,8,11,14,9,12,5];
+    canvas.addEventListener("click", onClick);
 
-    board.addEventListener("click", (e) => {
-        const rect = board.getBoundingClientRect();
-        const x = e.clientX - rect.left - 150;
-        const y = e.clientY - rect.top - 150;
-        const dist = Math.sqrt(x*x + y*y);
+    resetGame();
+    drawBoard();
 
-        let score = 0;
+    function drawBoard() {
+        ctx.clearRect(0, 0, size, size);
 
-        if (dist < 15) score = 50;           // bullseye
-        else if (dist < 30) score = 25;      // outer bull
-        else if (dist < 45) score = 0;       // miss inner
-        else if (dist < 75) score = ringScore(x,y) * 3; // triple
-        else if (dist < 135) score = ringScore(x,y);
-        else if (dist < 150) score = ringScore(x,y) * 2;
-        else score = 0;
+        const seg = (Math.PI * 2) / 20;
 
-        scores[currentPlayer] -= score;
-        updateUI();
+        for (let i = 0; i < 20; i++) {
+            // center 20 at 12 o’clock
+            const start = -Math.PI / 2 - seg / 2 + i * seg;
+            const end = start + seg;
 
-        dartsThrown++;
-        if (dartsThrown === 3) nextPlayer();
-    });
+            ctx.fillStyle = i % 2 === 0 ? "#000000" : "#facc15";
 
-    function ringScore(x, y) {
-        let angle = Math.atan2(y, x) * 180 / Math.PI + 180;
-        let index = Math.floor(angle / 18);
-        return numbers[index];
+            ctx.beginPath();
+            ctx.moveTo(center, center);
+            ctx.arc(center, center, radius, start, end);
+            ctx.closePath();
+            ctx.fill();
+
+            // numbers
+            const angle = start + seg / 2;
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(
+                numbers[i],
+                center + Math.cos(angle) * (radius - 28),
+                center + Math.sin(angle) * (radius - 28)
+            );
+        }
+
+        // TREBLE ring (WHITE)
+        drawRing(radius * 0.45, radius * 0.5, "#ffffff");
+
+        // DOUBLE ring (WHITE)
+        drawRing(radius * 0.9, radius * 0.95, "#ffffff");
+
+        // outer bull (yellow)
+        drawCircle(radius * 0.08, "#facc15");
+
+        // bullseye (black)
+        drawCircle(radius * 0.04, "#000000");
     }
 
-    function nextPlayer() {
-        dartsThrown = 0;
-        currentPlayer = (currentPlayer + 1) % 3;
+    function drawRing(inner, outer, color) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = outer - inner;
+        ctx.beginPath();
+        ctx.arc(center, center, (inner + outer) / 2, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    function drawCircle(r, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(center, center, r, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function onClick(e) {
+        const mode = document.getElementById("mode").value;
+        if (mode === "10turns" && turns[currentPlayer] >= 10) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left - center;
+        const y = e.clientY - rect.top - center;
+        const dist = Math.hypot(x, y);
+
+        let angle = Math.atan2(y, x);
+        angle = (angle + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2);
+
+        let hit = 0;
+
+        if (dist < radius * 0.04) hit = 50;
+        else if (dist < radius * 0.08) hit = 25;
+        else if (dist < radius) {
+            const idx = Math.floor(angle / (Math.PI * 2) * 20);
+            const base = numbers[idx];
+
+            if (dist > radius * 0.9 && dist < radius * 0.95) hit = base * 2;
+            else if (dist > radius * 0.45 && dist < radius * 0.5) hit = base * 3;
+            else hit = base;
+        }
+
+        if (mode === "501") scores[currentPlayer] -= hit;
+        else scores[currentPlayer] += hit;
+
+        darts++;
+        if (darts === 3) {
+            darts = 0;
+            turns[currentPlayer]++;
+            currentPlayer = (currentPlayer + 1) % 3;
+        }
+
         updateUI();
     }
 
@@ -121,12 +203,20 @@
             document.querySelector(`#p${i} span`).textContent = scores[i];
             document.getElementById(`p${i}`).classList.toggle("active", i === currentPlayer);
         }
+
+        const mode = document.getElementById("mode").value;
+        document.getElementById("info").textContent =
+            mode === "10turns"
+                ? `Player ${currentPlayer + 1} – Turn ${turns[currentPlayer] + 1} / 10`
+                : `Player ${currentPlayer + 1} – Dart ${darts + 1} / 3`;
     }
 
     function resetGame() {
-        scores = [501, 501, 501];
+        const mode = document.getElementById("mode").value;
+        scores = mode === "501" ? [501, 501, 501] : [0, 0, 0];
+        turns = [0, 0, 0];
         currentPlayer = 0;
-        dartsThrown = 0;
+        darts = 0;
         updateUI();
     }
 </script>
