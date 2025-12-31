@@ -1,16 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>My Apps</title>
-    <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-<h1>🚀 My Apps</h1>
-<p>Click a button to open an app</p>
+<html lang="en"><head><style>body {transition: opacity ease-in 0.2s; }
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; }
+</style>
+    <title>Empester</title>
+    <link rel="icon" type="image/png" href="/~/fav.png">
+    <meta description="Empester's Portfolio ~ Works and Projects">
+    <style>
+        body {
+            background-color: #28282B;
+        }
 
-<div class="apps-grid">
-    <a href="apps/app1.html" target="_blank" class="app-btn">Dart Score Counter</a>
-</div>
-</body>
-</html>
+
+
+        p {
+            padding-left: 5px;
+            color: white;
+        }
+
+        #py {
+            color:rgb(86, 86, 241);
+        }
+
+        #HTML {
+            color: rgb(240, 151, 61);
+        }
+
+        #CSS {
+            color:#8ba7e9;
+        }
+
+        #me {
+            color: rgb(208, 81, 81)
+        }
+
+        pre {
+            color: white;
+        }
+
+        h {
+            color: red;
+            text-align: center;
+        }
+    </style>
+
+
+
+    <style>pre[class*="language-"].line-numbers {
+        position: relative;
+        padding-left: 3.8em;
+        counter-reset: linenumber;
+    }
+
+    pre[class*="language-"].line-numbers > code {
+        position: relative;
+        white-space: inherit;
+    }
+
+    .line-numbers .line-numbers-rows {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        font-size: 100%;
+        left: -3.8em;
+        width: 3em; /* works for line-numbers below 1000 lines */
+        letter-spacing: -1px;
+        border-right: 1px solid #999;
+
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+    }
+
+    .line-numbers-rows > span {
+        display: block;
+        counter-increment: linenumber;
+    }
+
+    .line-numbers-rows > span:before {
+        content: counter(linenumber);
+        color: #999;
+        display: block;
+        padding-right: 0.8em;
+        text-align: right;
+    }
+
+    /*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8uL25vZGVfbW9kdWxlcy9wcmlzbWpzL3BsdWdpbnMvbGluZS1udW1iZXJzL3ByaXNtLWxpbmUtbnVtYmVycy5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Q0FDQyxrQkFBa0I7Q0FDbEIsbUJBQW1CO0NBQ25CLHlCQUF5QjtBQUMxQjs7QUFFQTtDQUNDLGtCQUFrQjtDQUNsQixvQkFBb0I7QUFDckI7O0FBRUE7Q0FDQyxrQkFBa0I7Q0FDbEIsb0JBQW9CO0NBQ3BCLE1BQU07Q0FDTixlQUFlO0NBQ2YsWUFBWTtDQUNaLFVBQVUsRUFBRSw0Q0FBNEM7Q0FDeEQsb0JBQW9CO0NBQ3BCLDRCQUE0Qjs7Q0FFNUIseUJBQXlCO0NBQ3pCLHNCQUFzQjtDQUN0QixxQkFBcUI7Q0FDckIsaUJBQWlCOztBQUVsQjs7Q0FFQztFQUNDLGNBQWM7RUFDZCw2QkFBNkI7Q0FDOUI7O0VBRUM7R0FDQyw0QkFBNEI7R0FDNUIsV0FBVztHQUNYLGNBQWM7R0FDZCxvQkFBb0I7R0FDcEIsaUJBQWlCO0VBQ2xCIiwic291cmNlc0NvbnRlbnQiOlsicHJlW2NsYXNzKj1cImxhbmd1YWdlLVwiXS5saW5lLW51bWJlcnMge1xuXHRwb3NpdGlvbjogcmVsYXRpdmU7XG5cdHBhZGRpbmctbGVmdDogMy44ZW07XG5cdGNvdW50ZXItcmVzZXQ6IGxpbmVudW1iZXI7XG59XG5cbnByZVtjbGFzcyo9XCJsYW5ndWFnZS1cIl0ubGluZS1udW1iZXJzID4gY29kZSB7XG5cdHBvc2l0aW9uOiByZWxhdGl2ZTtcblx0d2hpdGUtc3BhY2U6IGluaGVyaXQ7XG59XG5cbi5saW5lLW51bWJlcnMgLmxpbmUtbnVtYmVycy1yb3dzIHtcblx0cG9zaXRpb246IGFic29sdXRlO1xuXHRwb2ludGVyLWV2ZW50czogbm9uZTtcblx0dG9wOiAwO1xuXHRmb250LXNpemU6IDEwMCU7XG5cdGxlZnQ6IC0zLjhlbTtcblx0d2lkdGg6IDNlbTsgLyogd29ya3MgZm9yIGxpbmUtbnVtYmVycyBiZWxvdyAxMDAwIGxpbmVzICovXG5cdGxldHRlci1zcGFjaW5nOiAtMXB4O1xuXHRib3JkZXItcmlnaHQ6IDFweCBzb2xpZCAjOTk5O1xuXG5cdC13ZWJraXQtdXNlci1zZWxlY3Q6IG5vbmU7XG5cdC1tb3otdXNlci1zZWxlY3Q6IG5vbmU7XG5cdC1tcy11c2VyLXNlbGVjdDogbm9uZTtcblx0dXNlci1zZWxlY3Q6IG5vbmU7XG5cbn1cblxuXHQubGluZS1udW1iZXJzLXJvd3MgPiBzcGFuIHtcblx0XHRkaXNwbGF5OiBibG9jaztcblx0XHRjb3VudGVyLWluY3JlbWVudDogbGluZW51bWJlcjtcblx0fVxuXG5cdFx0LmxpbmUtbnVtYmVycy1yb3dzID4gc3BhbjpiZWZvcmUge1xuXHRcdFx0Y29udGVudDogY291bnRlcihsaW5lbnVtYmVyKTtcblx0XHRcdGNvbG9yOiAjOTk5O1xuXHRcdFx0ZGlzcGxheTogYmxvY2s7XG5cdFx0XHRwYWRkaW5nLXJpZ2h0OiAwLjhlbTtcblx0XHRcdHRleHQtYWxpZ246IHJpZ2h0O1xuXHRcdH1cbiJdLCJzb3VyY2VSb290IjoiIn0= */</style></head>
+<body>
+
+<p>Hello I am <strong id="me">scovings</strong>, a small developer that knows to code in <strong id="py">Java</strong>,
+    <strong id="HTML"> HTML</strong> and <strong id="CSS">CSS.</strong></p>
+<!-- Site for ASCII gen: https://patorjk.com/software/taag/#p=display&f=Alpha&t=GitHub -->
+<pre>          _____                    _____                _____                    _____                    _____                    _____
+         /\    \                  /\    \              /\    \                  /\    \                  /\    \                  /\    \
+        /::\    \                /::\    \            /::\    \                /::\____\                /::\____\                /::\    \
+       /::::\    \               \:::\    \           \:::\    \              /:::/    /               /:::/    /               /::::\    \
+      /::::::\    \               \:::\    \           \:::\    \            /:::/    /               /:::/    /               /::::::\    \
+     /:::/\:::\    \               \:::\    \           \:::\    \          /:::/    /               /:::/    /               /:::/\:::\    \
+    /:::/  \:::\    \               \:::\    \           \:::\    \        /:::/____/               /:::/    /               /:::/__\:::\    \
+   /:::/    \:::\    \              /::::\    \          /::::\    \      /::::\    \              /:::/    /               /::::\   \:::\    \
+  /:::/    / \:::\    \    ____    /::::::\    \        /::::::\    \    /::::::\    \   _____    /:::/    /      _____    /::::::\   \:::\    \
+ /:::/    /   \:::\ ___\  /\   \  /:::/\:::\    \      /:::/\:::\    \  /:::/\:::\    \ /\    \  /:::/____/      /\    \  /:::/\:::\   \:::\ ___\
+/:::/____/  ___\:::|    |/::\   \/:::/  \:::\____\    /:::/  \:::\____\/:::/  \:::\    /::\____\|:::|    /      /::\____\/:::/__\:::\   \:::|    |
+\:::\    \ /\  /:::|____|\:::\  /:::/    \::/    /   /:::/    \::/    /\::/    \:::\  /:::/    /|:::|____\     /:::/    /\:::\   \:::\  /:::|____|
+ \:::\    /::\ \::/    /  \:::\/:::/    / \/____/   /:::/    / \/____/  \/____/ \:::\/:::/    /  \:::\    \   /:::/    /  \:::\   \:::\/:::/    /
+  \:::\   \:::\ \/____/    \::::::/    /           /:::/    /                    \::::::/    /    \:::\    \ /:::/    /    \:::\   \::::::/    /
+   \:::\   \:::\____\       \::::/____/           /:::/    /                      \::::/    /      \:::\    /:::/    /      \:::\   \::::/    /
+    \:::\  /:::/    /        \:::\    \           \::/    /                       /:::/    /        \:::\__/:::/    /        \:::\  /:::/    /
+     \:::\/:::/    /          \:::\    \           \/____/                       /:::/    /          \::::::::/    /          \:::\/:::/    /
+      \::::::/    /            \:::\    \                                       /:::/    /            \::::::/    /            \::::::/    /
+       \::::/    /              \:::\____\                                     /:::/    /              \::::/    /              \::::/    /
+        \::/____/                \::/    /                                     \::/    /                \::/____/                \::/____/
+                                  \/____/                                       \/____/                  ~~                       ~~
+
+    </pre>
+<h>SITE IN DEVELOPMENT, IGNORE!</h>
+
+
+
+
+
+
+</body><div class="question-mark-layout" style="position: absolute; visibility: hidden; left: 0px; top: 0px; z-index: 2147483647;"></div><div class="side-icon-layout" style="display: block; position: absolute; z-index: 2147483647;"></div></html>
