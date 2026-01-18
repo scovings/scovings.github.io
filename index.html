@@ -48,8 +48,9 @@
         height: 500px;
         border-radius: 50%;
         position: relative;
-        background: #000;
+        background: #1a1a1a;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        border: 8px solid #333;
       }
 
       .segment {
@@ -63,7 +64,7 @@
       }
 
       .segment:hover {
-        opacity: 0.8;
+        opacity: 0.7;
       }
 
       .bullseye {
@@ -74,6 +75,7 @@
         border-radius: 50%;
         cursor: pointer;
         transition: opacity 0.2s;
+        border: 2px solid #888;
       }
 
       .bullseye:hover {
@@ -241,31 +243,21 @@
         <div class="dartboard-container">
           <svg class="dartboard" viewBox="0 0 500 500">
             <defs>
-              <pattern
-                id="wire"
-                patternUnits="userSpaceOnUse"
-                width="1"
-                height="500"
-              >
-                <line
-                  x1="0.5"
-                  y1="0"
-                  x2="0.5"
-                  y2="500"
-                  stroke="#888"
-                  stroke-width="1"
-                />
-              </pattern>
+              <radialGradient id="boardGradient">
+                <stop offset="0%" style="stop-color: #2a2a2a" />
+                <stop offset="100%" style="stop-color: #1a1a1a" />
+              </radialGradient>
             </defs>
             <circle
               cx="250"
               cy="250"
-              r="245"
-              fill="#000"
-              stroke="#888"
-              stroke-width="2"
+              r="246"
+              fill="url(#boardGradient)"
+              stroke="#444"
+              stroke-width="3"
             />
             <g id="segments"></g>
+            <g id="numbers"></g>
           </svg>
           <div class="bullseye outer-bull" onclick="handleScore(25, 1)"></div>
           <div class="bullseye inner-bull" onclick="handleScore(50, 1)"></div>
@@ -330,71 +322,163 @@
 
       function createDartboard() {
         const svg = document.getElementById("segments");
-        const colors = ["#000", "#fff", "#e74c3c", "#2ecc71"];
+        const numbersSvg = document.getElementById("numbers");
+        const centerX = 250;
+        const centerY = 250;
 
+        // Create segments - 20 is at the top (angle -90, rotated -9 degrees to center it)
         for (let i = 0; i < 20; i++) {
-          const angle = i * 18 - 90;
-          const num = dartNumbers[i];
-          const color1 = i % 2 === 0 ? colors[0] : colors[1];
-          const color2 = i % 2 === 0 ? colors[2] : colors[3];
+          const number = dartNumbers[i];
+          const startAngle = -99 + i * 18;
+          const endAngle = startAngle + 18;
 
-          // Single outer
-          svg.innerHTML += createSegment(angle, 170, 245, color1, num, 1);
-          // Double
-          svg.innerHTML += createSegment(angle, 228, 245, color2, num, 2);
-          // Single inner
-          svg.innerHTML += createSegment(angle, 95, 170, color1, num, 1);
-          // Treble
-          svg.innerHTML += createSegment(angle, 115, 135, color2, num, 3);
-          // Single center
-          svg.innerHTML += createSegment(angle, 20, 95, color1, num, 1);
+          // Alternate colors: black and cream
+          const isBlack = i % 2 === 0;
+          const singleColor = isBlack ? "#000000" : "#f5f5dc";
+          const doubleColor = isBlack ? "#dc143c" : "#00a650";
+          const trebleColor = isBlack ? "#dc143c" : "#00a650";
 
-          // Add number labels
-          const labelAngle = angle + 9; // Center of segment
-          const labelPos = polarToCart(250, 250, 260, labelAngle);
-          const textRotation = labelAngle + 90; // Rotate text to be upright
-          svg.innerHTML += `<text x="${labelPos.x}" y="${labelPos.y}" 
+          // Draw segments from outside to inside
+          // Outer single (170-228)
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            170,
+            228,
+            singleColor,
+            number,
+            1,
+          );
+
+          // Double ring (228-245)
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            228,
+            245,
+            doubleColor,
+            number,
+            2,
+          );
+
+          // Inner single (95-170)
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            95,
+            170,
+            singleColor,
+            number,
+            1,
+          );
+
+          // Treble ring (115-135)
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            115,
+            135,
+            trebleColor,
+            number,
+            3,
+          );
+
+          // Inner single (20-95)
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            20,
+            95,
+            singleColor,
+            number,
+            1,
+          );
+
+          // Add number labels outside the board
+          const labelAngle = startAngle + 9;
+          const labelRadius = 268;
+          const labelX =
+            centerX + labelRadius * Math.cos((labelAngle * Math.PI) / 180);
+          const labelY =
+            centerY + labelRadius * Math.sin((labelAngle * Math.PI) / 180);
+
+          numbersSvg.innerHTML += `<text x="${labelX}" y="${labelY}" 
                     text-anchor="middle" dominant-baseline="middle" 
-                    fill="white" font-size="20" font-weight="bold" 
-                    transform="rotate(${textRotation}, ${labelPos.x}, ${labelPos.y})"
-                    style="pointer-events: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                    ${num}</text>`;
+                    fill="#ffffff" font-size="26" font-weight="bold" 
+                    style="pointer-events: none; text-shadow: 3px 3px 6px rgba(0,0,0,1);">${number}</text>`;
         }
+
+        // Add wire lines
+        for (let i = 0; i < 20; i++) {
+          const angle = -99 + i * 18;
+          const x1 = centerX + 20 * Math.cos((angle * Math.PI) / 180);
+          const y1 = centerY + 20 * Math.sin((angle * Math.PI) / 180);
+          const x2 = centerX + 245 * Math.cos((angle * Math.PI) / 180);
+          const y2 = centerY + 245 * Math.sin((angle * Math.PI) / 180);
+
+          svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                    stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
+        }
+
+        // Add circular wires (outer edges only)
+        [95, 170, 228].forEach((r) => {
+          svg.innerHTML += `<circle cx="${centerX}" cy="${centerY}" r="${r}" 
+                    fill="none" stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
+        });
       }
 
-      function createSegment(
+      function createSegmentPath(
+        svg,
+        cx,
+        cy,
         startAngle,
+        endAngle,
         innerR,
         outerR,
         color,
         number,
         multiplier,
       ) {
-        const angleSpan = 18;
-        const start = polarToCart(250, 250, innerR, startAngle);
-        const end = polarToCart(250, 250, innerR, startAngle + angleSpan);
-        const outerStart = polarToCart(250, 250, outerR, startAngle);
-        const outerEnd = polarToCart(250, 250, outerR, startAngle + angleSpan);
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
 
-        const d = `M ${start.x} ${start.y} 
-                       L ${outerStart.x} ${outerStart.y} 
-                       A ${outerR} ${outerR} 0 0 1 ${outerEnd.x} ${outerEnd.y} 
-                       L ${end.x} ${end.y} 
-                       A ${innerR} ${innerR} 0 0 0 ${start.x} ${start.y}`;
+        const x1 = cx + innerR * Math.cos(startRad);
+        const y1 = cy + innerR * Math.sin(startRad);
+        const x2 = cx + outerR * Math.cos(startRad);
+        const y2 = cy + outerR * Math.sin(startRad);
+        const x3 = cx + outerR * Math.cos(endRad);
+        const y3 = cy + outerR * Math.sin(endRad);
+        const x4 = cx + innerR * Math.cos(endRad);
+        const y4 = cy + innerR * Math.sin(endRad);
 
-        return `<path d="${d}" fill="${color}" stroke="#888" stroke-width="1" 
-                    onclick="handleScore(${number}, ${multiplier})" 
-                    style="cursor: pointer;" 
-                    onmouseover="this.style.opacity='0.7'" 
-                    onmouseout="this.style.opacity='1'"/>`;
-      }
+        const largeArc = 0;
 
-      function polarToCart(cx, cy, r, angle) {
-        const rad = (angle * Math.PI) / 180;
-        return {
-          x: cx + r * Math.cos(rad),
-          y: cy + r * Math.sin(rad),
-        };
+        const path = `M ${x1} ${y1} 
+                         L ${x2} ${y2} 
+                         A ${outerR} ${outerR} 0 ${largeArc} 1 ${x3} ${y3} 
+                         L ${x4} ${y4} 
+                         A ${innerR} ${innerR} 0 ${largeArc} 0 ${x1} ${y1} Z`;
+
+        svg.innerHTML += `<path d="${path}" fill="${color}" stroke="#888" stroke-width="0.5"
+                onclick="handleScore(${number}, ${multiplier})" 
+                style="cursor: pointer;" 
+                onmouseover="this.style.opacity='0.7'" 
+                onmouseout="this.style.opacity='1'"/>`;
       }
 
       function handleScore(number, multiplier) {
@@ -404,7 +488,6 @@
         const player = gameState.players[gameState.currentPlayer];
         const newScore = player.score - score;
 
-        // Check if bust (below 0 or at 1) or invalid finish (not double)
         if (newScore < 0 || newScore === 1) {
           gameState.currentThrow.push({
             score,
@@ -420,7 +503,6 @@
           return;
         }
 
-        // Check if trying to finish without a double
         if (newScore === 0 && multiplier !== 2) {
           gameState.currentThrow.push({
             score,
@@ -438,7 +520,6 @@
 
         gameState.currentThrow.push({ score, number, multiplier });
 
-        // Check for winner
         if (newScore === 0) {
           player.score = 0;
           gameState.winner = gameState.currentPlayer;
@@ -449,7 +530,6 @@
 
         updateDisplay();
 
-        // Auto advance after 3 darts
         if (gameState.currentThrow.length === 3) {
           setTimeout(nextPlayer, 1000);
         }
@@ -476,7 +556,6 @@
         document.getElementById("dartCount").textContent =
           `${gameState.currentThrow.length}/3`;
 
-        // Update score displays
         gameState.players.forEach((p, i) => {
           const scoreEl = document.querySelector(
             `#player${i + 1} .player-score`,
@@ -512,7 +591,6 @@
             : "Last throws: -";
         });
 
-        // Update active player
         document.querySelectorAll(".player").forEach((el, i) => {
           el.classList.toggle("active", i === gameState.currentPlayer);
         });
@@ -528,18 +606,15 @@
       function nextPlayer() {
         const player = gameState.players[gameState.currentPlayer];
 
-        // Calculate total for this turn
         const turnTotal = gameState.currentThrow.reduce(
           (sum, t) => sum + (t.bust ? 0 : t.score),
           0,
         );
 
-        // Apply score if not bust
         if (!gameState.currentThrow.some((t) => t.bust)) {
           player.score -= turnTotal;
         }
 
-        // Save history
         if (gameState.currentThrow.length > 0) {
           const throwRecord = gameState.currentThrow.map((t) => {
             const prefix =
@@ -549,7 +624,6 @@
           player.history.push(throwRecord);
         }
 
-        // Reset throw and switch player
         gameState.currentThrow = [];
         gameState.currentPlayer = (gameState.currentPlayer + 1) % 2;
         updateDisplay();
@@ -579,7 +653,6 @@
         document.body.appendChild(msg);
       }
 
-      // Initialize
       createDartboard();
       updateDisplay();
     </script>
