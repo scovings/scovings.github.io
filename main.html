@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Darts 501 Counter</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 20px;
+      }
+
+      canvas {
+        background: #222;
+        border-radius: 50%;
+        cursor: crosshair;
+      }
+
+      .scoreboard {
+        display: flex;
+        gap: 40px;
+        font-size: 20px;
+      }
+
+      .active {
+        color: #4ade80;
+        font-weight: bold;
+      }
+
+      button {
+        padding: 8px 14px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Darts 501</h1>
+
+    <div class="scoreboard">
+      <div id="p1" class="active">Player 1: <span id="s1">501</span></div>
+      <div id="p2">Player 2: <span id="s2">501</span></div>
+    </div>
+
+    <canvas id="board" width="400" height="400"></canvas>
+
+    <button onclick="nextTurn()">Next Turn</button>
+    <div id="last" style="margin-top: 6px; font-size: 16px">Last dart: –</div>
+
+    <script>
+      const canvas = document.getElementById("board");
+      const ctx = canvas.getContext("2d");
+
+      let scores = [501, 501];
+      let currentPlayer = 0;
+
+      const center = 200;
+
+      // real dartboard proportions (scaled)
+      const R_DOUBLE_OUTER = 180;
+      const R_DOUBLE_INNER = 165;
+      const R_TRIPLE_OUTER = 110;
+      const R_TRIPLE_INNER = 95;
+      const R_OUTER_BULL = 25;
+      const R_INNER_BULL = 12;
+
+      const numbers = [
+        20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
+      ];
+
+      function drawBoard() {
+        ctx.clearRect(0, 0, 400, 400);
+
+        for (let i = 0; i < 20; i++) {
+          // rotate so 20 is centered at the top
+          const slice = (Math.PI * 2) / 20;
+          const start = -Math.PI / 2 - slice / 2 + i * slice;
+          const end = start + slice;
+
+          // inner single
+          ctx.beginPath();
+          ctx.arc(center, center, R_TRIPLE_INNER, start, end);
+          ctx.arc(center, center, R_OUTER_BULL, end, start, true);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? "#444" : "#666";
+          ctx.fill();
+
+          // triple ring
+          ctx.beginPath();
+          ctx.arc(center, center, R_TRIPLE_OUTER, start, end);
+          ctx.arc(center, center, R_TRIPLE_INNER, end, start, true);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? "#22c55e" : "#dc2626";
+          ctx.fill();
+
+          // outer single
+          ctx.beginPath();
+          ctx.arc(center, center, R_DOUBLE_INNER, start, end);
+          ctx.arc(center, center, R_TRIPLE_OUTER, end, start, true);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? "#444" : "#666";
+          ctx.fill();
+
+          // double ring
+          ctx.beginPath();
+          ctx.arc(center, center, R_DOUBLE_OUTER, start, end);
+          ctx.arc(center, center, R_DOUBLE_INNER, end, start, true);
+          ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? "#22c55e" : "#dc2626";
+          ctx.fill();
+
+          // numbers
+          const angle = (start + end) / 2;
+          const tx = center + Math.cos(angle) * 150;
+          const ty = center + Math.sin(angle) * 150;
+          ctx.fillStyle = "#fff";
+          ctx.font = "14px Arial";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(numbers[i], tx, ty);
+        }
+
+        // outer bull (25)
+        ctx.beginPath();
+        ctx.arc(center, center, R_OUTER_BULL, 0, Math.PI * 2);
+        ctx.fillStyle = "#22c55e";
+        ctx.fill();
+
+        // inner bull (50)
+        ctx.beginPath();
+        ctx.arc(center, center, R_INNER_BULL, 0, Math.PI * 2);
+        ctx.fillStyle = "#dc2626";
+        ctx.fill();
+      }
+
+      function getScore(x, y) {
+        const dx = x - center;
+        const dy = y - center;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist <= R_INNER_BULL) return { score: 50, label: "IB (50)" };
+        if (dist <= R_OUTER_BULL) return { score: 25, label: "OB (25)" };
+        if (dist > R_DOUBLE_OUTER) return { score: 0, label: "Miss (0)" };
+
+        const angle =
+          (Math.atan2(dy, dx) + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2);
+        const index = Math.floor(angle / ((Math.PI * 2) / 20));
+        const base = numbers[index];
+
+        if (dist >= R_DOUBLE_INNER)
+          return { score: base * 2, label: `D${base}` };
+        if (dist >= R_TRIPLE_INNER && dist <= R_TRIPLE_OUTER)
+          return { score: base * 3, label: `T${base}` };
+
+        return { score: base, label: `S${base}` };
+      }
+
+      canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const hit = getScore(x, y);
+
+        if (scores[currentPlayer] - hit.score >= 0) {
+          scores[currentPlayer] -= hit.score;
+        }
+
+        document.getElementById("last").textContent = `Last dart: ${hit.label}`;
+
+        updateUI();
+      });
+
+      function nextTurn() {
+        currentPlayer = currentPlayer === 0 ? 1 : 0;
+        updateUI();
+      }
+
+      function updateUI() {
+        document.getElementById("s1").textContent = scores[0];
+        document.getElementById("s2").textContent = scores[1];
+
+        document
+          .getElementById("p1")
+          .classList.toggle("active", currentPlayer === 0);
+        document
+          .getElementById("p2")
+          .classList.toggle("active", currentPlayer === 1);
+      }
+
+      drawBoard();
+    </script>
+  </body>
+</html>
