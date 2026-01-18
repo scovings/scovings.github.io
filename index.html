@@ -2,198 +2,586 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Darts 501 Counter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>501 Darts Scorer</title>
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
         font-family: Arial, sans-serif;
-        background: #111;
-        color: #eee;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh;
         padding: 20px;
+        color: white;
       }
 
-      canvas {
-        background: #222;
-        border-radius: 50%;
-        cursor: crosshair;
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
-      .scoreboard {
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .game-area {
         display: flex;
         gap: 40px;
-        font-size: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
       }
 
-      .active {
-        color: #4ade80;
+      .dartboard-container {
+        position: relative;
+      }
+
+      .dartboard {
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        position: relative;
+        background: #000;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .segment {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .segment:hover {
+        opacity: 0.8;
+      }
+
+      .bullseye {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .bullseye:hover {
+        opacity: 0.8;
+      }
+
+      .outer-bull {
+        width: 40px;
+        height: 40px;
+        background: #2ecc71;
+        z-index: 10;
+      }
+
+      .inner-bull {
+        width: 16px;
+        height: 16px;
+        background: #e74c3c;
+        z-index: 11;
+      }
+
+      .score-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        min-width: 300px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+
+      .player {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        transition: all 0.3s;
+      }
+
+      .player.active {
+        background: rgba(46, 204, 113, 0.3);
+        border: 2px solid #2ecc71;
+      }
+
+      .player-name {
+        font-size: 1.5em;
+        margin-bottom: 10px;
         font-weight: bold;
       }
 
+      .player-score {
+        font-size: 3em;
+        font-weight: bold;
+        color: #2ecc71;
+        margin: 10px 0;
+      }
+
+      .throw-history {
+        font-size: 0.9em;
+        color: #ecf0f1;
+        margin-top: 10px;
+        min-height: 60px;
+      }
+
+      .current-throw {
+        background: rgba(52, 152, 219, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+      }
+
+      .throw-display {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #3498db;
+      }
+
+      .controls {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
       button {
-        padding: 8px 14px;
-        font-size: 14px;
+        padding: 12px 24px;
+        font-size: 1em;
+        border: none;
+        border-radius: 8px;
         cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
+
+      .undo-btn {
+        background: #e74c3c;
+        color: white;
+        flex: 1;
+      }
+
+      .undo-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+      }
+
+      .next-btn {
+        background: #2ecc71;
+        color: white;
+        flex: 1;
+      }
+
+      .next-btn:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+      }
+
+      .reset-btn {
+        background: #95a5a6;
+        color: white;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .reset-btn:hover {
+        background: #7f8c8d;
+      }
+
+      .winner-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(46, 204, 113, 0.95);
+        padding: 40px 60px;
+        border-radius: 20px;
+        font-size: 2em;
+        font-weight: bold;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: popIn 0.5s ease-out;
+      }
+
+      @keyframes popIn {
+        0% {
+          transform: translate(-50%, -50%) scale(0.5);
+          opacity: 0;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .instructions {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-size: 0.9em;
       }
     </style>
   </head>
   <body>
-    <h1>Darts 501</h1>
+    <div class="container">
+      <h1>🎯 501 Darts</h1>
 
-    <div class="scoreboard">
-      <div id="p1" class="active">Player 1: <span id="s1">501</span></div>
-      <div id="p2">Player 2: <span id="s2">501</span></div>
+      <div class="game-area">
+        <div class="dartboard-container">
+          <svg class="dartboard" viewBox="0 0 500 500">
+            <defs>
+              <pattern
+                id="wire"
+                patternUnits="userSpaceOnUse"
+                width="1"
+                height="500"
+              >
+                <line
+                  x1="0.5"
+                  y1="0"
+                  x2="0.5"
+                  y2="500"
+                  stroke="#888"
+                  stroke-width="1"
+                />
+              </pattern>
+            </defs>
+            <circle
+              cx="250"
+              cy="250"
+              r="245"
+              fill="#000"
+              stroke="#888"
+              stroke-width="2"
+            />
+            <g id="segments"></g>
+          </svg>
+          <div class="bullseye outer-bull" onclick="handleScore(25, 1)"></div>
+          <div class="bullseye inner-bull" onclick="handleScore(50, 1)"></div>
+        </div>
+
+        <div class="score-panel">
+          <div id="player1" class="player active">
+            <div class="player-name">Player 1</div>
+            <div class="player-score">501</div>
+            <div class="throw-history">Last throws: -</div>
+          </div>
+
+          <div id="player2" class="player">
+            <div class="player-name">Player 2</div>
+            <div class="player-score">501</div>
+            <div class="throw-history">Last throws: -</div>
+          </div>
+
+          <div class="current-throw">
+            <strong>Current Throw:</strong>
+            <div class="throw-display" id="currentThrow">
+              Click dartboard to throw
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9em">
+              Darts: <span id="dartCount">0/3</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="undo-btn" onclick="undoThrow()">↶ Undo</button>
+            <button class="next-btn" onclick="nextPlayer()">
+              Next Player →
+            </button>
+          </div>
+          <button class="reset-btn" onclick="resetGame()">🔄 New Game</button>
+
+          <div class="instructions">
+            <strong>How to Play:</strong><br />
+            • Click segments to score<br />
+            • 3 darts per turn<br />
+            • Must finish exactly on 0<br />
+            • Must finish on a double
+          </div>
+        </div>
+      </div>
     </div>
 
-    <canvas id="board" width="400" height="400"></canvas>
-
-    <button onclick="nextTurn()">Next Turn</button>
-    <div id="last" style="margin-top: 6px; font-size: 16px">Last dart: –</div>
-
     <script>
-      const canvas = document.getElementById("board");
-      const ctx = canvas.getContext("2d");
-
-      let scores = [501, 501];
-      let currentPlayer = 0;
-
-      const center = 200;
-
-      // real dartboard proportions (scaled)
-      const R_DOUBLE_OUTER = 180;
-      const R_DOUBLE_INNER = 165;
-      const R_TRIPLE_OUTER = 110;
-      const R_TRIPLE_INNER = 95;
-      const R_OUTER_BULL = 25;
-      const R_INNER_BULL = 12;
-
-      const numbers = [
+      const dartNumbers = [
         20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
       ];
 
-      function drawBoard() {
-        ctx.clearRect(0, 0, 400, 400);
+      let gameState = {
+        players: [
+          { score: 501, history: [] },
+          { score: 501, history: [] },
+        ],
+        currentPlayer: 0,
+        currentThrow: [],
+        winner: null,
+      };
+
+      function createDartboard() {
+        const svg = document.getElementById("segments");
+        const colors = ["#000", "#fff", "#e74c3c", "#2ecc71"];
 
         for (let i = 0; i < 20; i++) {
-          // rotate so 20 is centered at the top
-          const slice = (Math.PI * 2) / 20;
-          const start = -Math.PI / 2 - slice / 2 + i * slice;
-          const end = start + slice;
+          const angle = i * 18 - 90;
+          const num = dartNumbers[i];
+          const color1 = i % 2 === 0 ? colors[0] : colors[1];
+          const color2 = i % 2 === 0 ? colors[2] : colors[3];
 
-          // inner single
-          ctx.beginPath();
-          ctx.arc(center, center, R_TRIPLE_INNER, start, end);
-          ctx.arc(center, center, R_OUTER_BULL, end, start, true);
-          ctx.closePath();
-          ctx.fillStyle = i % 2 === 0 ? "#444" : "#666";
-          ctx.fill();
+          // Single outer
+          svg.innerHTML += createSegment(angle, 170, 245, color1, num, 1);
+          // Double
+          svg.innerHTML += createSegment(angle, 228, 245, color2, num, 2);
+          // Single inner
+          svg.innerHTML += createSegment(angle, 95, 170, color1, num, 1);
+          // Treble
+          svg.innerHTML += createSegment(angle, 115, 135, color2, num, 3);
+          // Single center
+          svg.innerHTML += createSegment(angle, 20, 95, color1, num, 1);
 
-          // triple ring
-          ctx.beginPath();
-          ctx.arc(center, center, R_TRIPLE_OUTER, start, end);
-          ctx.arc(center, center, R_TRIPLE_INNER, end, start, true);
-          ctx.closePath();
-          ctx.fillStyle = i % 2 === 0 ? "#22c55e" : "#dc2626";
-          ctx.fill();
+          // Add number labels
+          const labelAngle = angle + 9; // Center of segment
+          const labelPos = polarToCart(250, 250, 260, labelAngle);
+          const textRotation = labelAngle + 90; // Rotate text to be upright
+          svg.innerHTML += `<text x="${labelPos.x}" y="${labelPos.y}" 
+                    text-anchor="middle" dominant-baseline="middle" 
+                    fill="white" font-size="20" font-weight="bold" 
+                    transform="rotate(${textRotation}, ${labelPos.x}, ${labelPos.y})"
+                    style="pointer-events: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                    ${num}</text>`;
+        }
+      }
 
-          // outer single
-          ctx.beginPath();
-          ctx.arc(center, center, R_DOUBLE_INNER, start, end);
-          ctx.arc(center, center, R_TRIPLE_OUTER, end, start, true);
-          ctx.closePath();
-          ctx.fillStyle = i % 2 === 0 ? "#444" : "#666";
-          ctx.fill();
+      function createSegment(
+        startAngle,
+        innerR,
+        outerR,
+        color,
+        number,
+        multiplier,
+      ) {
+        const angleSpan = 18;
+        const start = polarToCart(250, 250, innerR, startAngle);
+        const end = polarToCart(250, 250, innerR, startAngle + angleSpan);
+        const outerStart = polarToCart(250, 250, outerR, startAngle);
+        const outerEnd = polarToCart(250, 250, outerR, startAngle + angleSpan);
 
-          // double ring
-          ctx.beginPath();
-          ctx.arc(center, center, R_DOUBLE_OUTER, start, end);
-          ctx.arc(center, center, R_DOUBLE_INNER, end, start, true);
-          ctx.closePath();
-          ctx.fillStyle = i % 2 === 0 ? "#22c55e" : "#dc2626";
-          ctx.fill();
+        const d = `M ${start.x} ${start.y} 
+                       L ${outerStart.x} ${outerStart.y} 
+                       A ${outerR} ${outerR} 0 0 1 ${outerEnd.x} ${outerEnd.y} 
+                       L ${end.x} ${end.y} 
+                       A ${innerR} ${innerR} 0 0 0 ${start.x} ${start.y}`;
 
-          // numbers
-          const angle = (start + end) / 2;
-          const tx = center + Math.cos(angle) * 150;
-          const ty = center + Math.sin(angle) * 150;
-          ctx.fillStyle = "#fff";
-          ctx.font = "14px Arial";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(numbers[i], tx, ty);
+        return `<path d="${d}" fill="${color}" stroke="#888" stroke-width="1" 
+                    onclick="handleScore(${number}, ${multiplier})" 
+                    style="cursor: pointer;" 
+                    onmouseover="this.style.opacity='0.7'" 
+                    onmouseout="this.style.opacity='1'"/>`;
+      }
+
+      function polarToCart(cx, cy, r, angle) {
+        const rad = (angle * Math.PI) / 180;
+        return {
+          x: cx + r * Math.cos(rad),
+          y: cy + r * Math.sin(rad),
+        };
+      }
+
+      function handleScore(number, multiplier) {
+        if (gameState.winner || gameState.currentThrow.length >= 3) return;
+
+        const score = number * multiplier;
+        const player = gameState.players[gameState.currentPlayer];
+        const newScore = player.score - score;
+
+        // Check if bust (below 0 or at 1) or invalid finish (not double)
+        if (newScore < 0 || newScore === 1) {
+          gameState.currentThrow.push({
+            score,
+            number,
+            multiplier,
+            bust: true,
+          });
+          updateDisplay();
+          setTimeout(() => {
+            alert("BUST! Score reset to start of turn.");
+            nextPlayer();
+          }, 300);
+          return;
         }
 
-        // outer bull (25)
-        ctx.beginPath();
-        ctx.arc(center, center, R_OUTER_BULL, 0, Math.PI * 2);
-        ctx.fillStyle = "#22c55e";
-        ctx.fill();
-
-        // inner bull (50)
-        ctx.beginPath();
-        ctx.arc(center, center, R_INNER_BULL, 0, Math.PI * 2);
-        ctx.fillStyle = "#dc2626";
-        ctx.fill();
-      }
-
-      function getScore(x, y) {
-        const dx = x - center;
-        const dy = y - center;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist <= R_INNER_BULL) return { score: 50, label: "IB (50)" };
-        if (dist <= R_OUTER_BULL) return { score: 25, label: "OB (25)" };
-        if (dist > R_DOUBLE_OUTER) return { score: 0, label: "Miss (0)" };
-
-        const angle =
-          (Math.atan2(dy, dx) + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2);
-        const index = Math.floor(angle / ((Math.PI * 2) / 20));
-        const base = numbers[index];
-
-        if (dist >= R_DOUBLE_INNER)
-          return { score: base * 2, label: `D${base}` };
-        if (dist >= R_TRIPLE_INNER && dist <= R_TRIPLE_OUTER)
-          return { score: base * 3, label: `T${base}` };
-
-        return { score: base, label: `S${base}` };
-      }
-
-      canvas.addEventListener("click", (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const hit = getScore(x, y);
-
-        if (scores[currentPlayer] - hit.score >= 0) {
-          scores[currentPlayer] -= hit.score;
+        // Check if trying to finish without a double
+        if (newScore === 0 && multiplier !== 2) {
+          gameState.currentThrow.push({
+            score,
+            number,
+            multiplier,
+            bust: true,
+          });
+          updateDisplay();
+          setTimeout(() => {
+            alert("Must finish on a double!");
+            nextPlayer();
+          }, 300);
+          return;
         }
 
-        document.getElementById("last").textContent = `Last dart: ${hit.label}`;
+        gameState.currentThrow.push({ score, number, multiplier });
 
-        updateUI();
-      });
+        // Check for winner
+        if (newScore === 0) {
+          player.score = 0;
+          gameState.winner = gameState.currentPlayer;
+          updateDisplay();
+          showWinner();
+          return;
+        }
 
-      function nextTurn() {
-        currentPlayer = currentPlayer === 0 ? 1 : 0;
-        updateUI();
+        updateDisplay();
+
+        // Auto advance after 3 darts
+        if (gameState.currentThrow.length === 3) {
+          setTimeout(nextPlayer, 1000);
+        }
       }
 
-      function updateUI() {
-        document.getElementById("s1").textContent = scores[0];
-        document.getElementById("s2").textContent = scores[1];
+      function updateDisplay() {
+        const player = gameState.players[gameState.currentPlayer];
+        let tempScore = player.score;
 
-        document
-          .getElementById("p1")
-          .classList.toggle("active", currentPlayer === 0);
-        document
-          .getElementById("p2")
-          .classList.toggle("active", currentPlayer === 1);
+        gameState.currentThrow.forEach((t) => {
+          if (!t.bust) tempScore -= t.score;
+        });
+
+        const throwText =
+          gameState.currentThrow
+            .map((t) => {
+              const prefix =
+                t.multiplier === 2 ? "D" : t.multiplier === 3 ? "T" : "";
+              return `${prefix}${t.number}${t.bust ? " (BUST)" : ""}`;
+            })
+            .join(", ") || "Click dartboard to throw";
+
+        document.getElementById("currentThrow").textContent = throwText;
+        document.getElementById("dartCount").textContent =
+          `${gameState.currentThrow.length}/3`;
+
+        // Update score displays
+        gameState.players.forEach((p, i) => {
+          const scoreEl = document.querySelector(
+            `#player${i + 1} .player-score`,
+          );
+          const historyEl = document.querySelector(
+            `#player${i + 1} .throw-history`,
+          );
+
+          if (
+            i === gameState.currentPlayer &&
+            gameState.currentThrow.length > 0
+          ) {
+            scoreEl.textContent = tempScore;
+          } else {
+            scoreEl.textContent = p.score;
+          }
+
+          const lastThrow = p.history[p.history.length - 1];
+          historyEl.textContent = lastThrow
+            ? `Last throws: ${lastThrow.join(", ")} = ${lastThrow.reduce(
+                (a, b) => {
+                  const match = b.match(/\d+/);
+                  return (
+                    a +
+                    (match
+                      ? parseInt(match[0]) *
+                        (b.includes("T") ? 3 : b.includes("D") ? 2 : 1)
+                      : 0)
+                  );
+                },
+                0,
+              )}`
+            : "Last throws: -";
+        });
+
+        // Update active player
+        document.querySelectorAll(".player").forEach((el, i) => {
+          el.classList.toggle("active", i === gameState.currentPlayer);
+        });
       }
 
-      drawBoard();
+      function undoThrow() {
+        if (gameState.currentThrow.length > 0) {
+          gameState.currentThrow.pop();
+          updateDisplay();
+        }
+      }
+
+      function nextPlayer() {
+        const player = gameState.players[gameState.currentPlayer];
+
+        // Calculate total for this turn
+        const turnTotal = gameState.currentThrow.reduce(
+          (sum, t) => sum + (t.bust ? 0 : t.score),
+          0,
+        );
+
+        // Apply score if not bust
+        if (!gameState.currentThrow.some((t) => t.bust)) {
+          player.score -= turnTotal;
+        }
+
+        // Save history
+        if (gameState.currentThrow.length > 0) {
+          const throwRecord = gameState.currentThrow.map((t) => {
+            const prefix =
+              t.multiplier === 2 ? "D" : t.multiplier === 3 ? "T" : "";
+            return `${prefix}${t.number}`;
+          });
+          player.history.push(throwRecord);
+        }
+
+        // Reset throw and switch player
+        gameState.currentThrow = [];
+        gameState.currentPlayer = (gameState.currentPlayer + 1) % 2;
+        updateDisplay();
+      }
+
+      function resetGame() {
+        gameState = {
+          players: [
+            { score: 501, history: [] },
+            { score: 501, history: [] },
+          ],
+          currentPlayer: 0,
+          currentThrow: [],
+          winner: null,
+        };
+
+        const winnerEl = document.querySelector(".winner-message");
+        if (winnerEl) winnerEl.remove();
+
+        updateDisplay();
+      }
+
+      function showWinner() {
+        const msg = document.createElement("div");
+        msg.className = "winner-message";
+        msg.innerHTML = `🎉 Player ${gameState.currentPlayer + 1} Wins! 🎉`;
+        document.body.appendChild(msg);
+      }
+
+      // Initialize
+      createDartboard();
+      updateDisplay();
     </script>
   </body>
 </html>
