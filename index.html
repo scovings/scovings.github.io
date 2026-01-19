@@ -1,559 +1,847 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>501 Darts Scorer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: white;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        min-height: 100vh;
+        padding: 20px;
+        color: white;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
 
-        .game-area {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start;
-        }
+      .game-area {
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+      }
 
-        .dartboard-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      .dartboard-container {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .dartboard {
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            position: relative;
-            background: #1a1a1a;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            border: 8px solid #333;
-        }
+      .dartboard {
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        position: relative;
+        background: #1a1a1a;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        border: 8px solid #333;
+      }
 
-        .board-number {
-            position: absolute;
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            pointer-events: none;
-        }
+      .board-number {
+        position: absolute;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+        pointer-events: none;
+      }
 
-        .segment {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
+      .segment {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
 
-        .segment:hover {
-            opacity: 0.7;
-        }
+      .segment:hover {
+        opacity: 0.7;
+      }
 
-        .bullseye {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            border: 2px solid #888;
-        }
+      .bullseye {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        border: 2px solid #888;
+      }
 
-        .bullseye:hover {
-            opacity: 0.8;
-        }
+      .bullseye:hover {
+        opacity: 0.8;
+      }
 
-        .outer-bull {
-            width: 40px;
-            height: 40px;
-            background: #2ecc71;
-            z-index: 10;
-        }
+      .outer-bull {
+        width: 40px;
+        height: 40px;
+        background: #2ecc71;
+        z-index: 10;
+      }
 
-        .inner-bull {
-            width: 16px;
-            height: 16px;
-            background: #e74c3c;
-            z-index: 11;
-        }
+      .inner-bull {
+        width: 16px;
+        height: 16px;
+        background: #e74c3c;
+        z-index: 11;
+      }
 
-        .score-panel {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 20px;
-            min-width: 300px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
+      .score-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 30px;
+        border-radius: 20px;
+        min-width: 300px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
 
-        .player {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            transition: all 0.3s;
-        }
+      .player {
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        transition: all 0.3s;
+      }
 
-        .player.active {
-            background: rgba(46, 204, 113, 0.3);
-            border: 2px solid #2ecc71;
-        }
+      .player.active {
+        background: rgba(46, 204, 113, 0.3);
+        border: 2px solid #2ecc71;
+      }
 
-        .player-name {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+      .player-name {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
 
-        .player-score {
-            font-size: 3em;
-            font-weight: bold;
-            color: #2ecc71;
-            margin: 10px 0;
-        }
+      .player-score {
+        font-size: 3em;
+        font-weight: bold;
+        color: #2ecc71;
+        margin: 10px 0;
+        cursor: pointer;
+        transition: all 0.3s;
+        padding: 10px;
+        border-radius: 10px;
+      }
 
-        .throw-history {
-            font-size: 0.9em;
-            color: #ecf0f1;
-            margin-top: 10px;
-            min-height: 60px;
-        }
+      .player-score:hover {
+        background: rgba(46, 204, 113, 0.2);
+        transform: scale(1.05);
+      }
 
-        .current-throw {
-            background: rgba(52, 152, 219, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
+      .throw-history {
+        font-size: 0.9em;
+        color: #ecf0f1;
+        margin-top: 10px;
+        min-height: 60px;
+      }
 
-        .throw-display {
-            font-size: 1.2em;
-            margin-top: 10px;
-            color: #3498db;
-        }
+      .current-throw {
+        background: rgba(52, 152, 219, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+      }
 
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
+      .throw-display {
+        font-size: 1.2em;
+        margin-top: 10px;
+        color: #3498db;
+      }
 
-        button {
-            padding: 12px 24px;
-            font-size: 1em;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
+      .controls {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
 
-        .undo-btn {
-            background: #e74c3c;
-            color: white;
-            flex: 1;
-        }
+      button {
+        padding: 12px 24px;
+        font-size: 1em;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
 
-        .undo-btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
+      .undo-btn {
+        background: #e74c3c;
+        color: white;
+        flex: 1;
+      }
 
-        .next-btn {
-            background: #2ecc71;
-            color: white;
-            flex: 1;
-        }
+      .undo-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+      }
 
-        .next-btn:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
-        }
+      .next-btn {
+        background: #2ecc71;
+        color: white;
+        flex: 1;
+      }
 
-        .reset-btn {
-            background: #95a5a6;
-            color: white;
-            width: 100%;
-            margin-top: 10px;
-        }
+      .next-btn:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+      }
 
-        .reset-btn:hover {
-            background: #7f8c8d;
-        }
+      .reset-btn {
+        background: #95a5a6;
+        color: white;
+        width: 100%;
+        margin-top: 10px;
+      }
 
-        .winner-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(46, 204, 113, 0.95);
-            padding: 40px 60px;
-            border-radius: 20px;
-            font-size: 2em;
-            font-weight: bold;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-            z-index: 1000;
-            animation: popIn 0.5s ease-out;
-        }
+      .reset-btn:hover {
+        background: #7f8c8d;
+      }
 
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
+      .winner-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(46, 204, 113, 0.95);
+        padding: 40px 60px;
+        border-radius: 20px;
+        font-size: 2em;
+        font-weight: bold;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        animation: popIn 0.5s ease-out;
+      }
 
-        .instructions {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 0.9em;
+      @keyframes popIn {
+        0% {
+          transform: translate(-50%, -50%) scale(0.5);
+          opacity: 0;
         }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .instructions {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-size: 0.9em;
+      }
+
+      .score-edit-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(30, 60, 114, 0.98);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        min-width: 300px;
+      }
+
+      .score-edit-popup h3 {
+        margin-bottom: 20px;
+        color: #2ecc71;
+      }
+
+      .score-edit-popup input {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.5em;
+        border: 2px solid #2ecc71;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .score-edit-popup input:focus {
+        outline: none;
+        border-color: #27ae60;
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .score-edit-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .score-edit-buttons button {
+        flex: 1;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1999;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>🎯 501 Darts</h1>
-        
-        <div class="game-area">
-            <div class="dartboard-container">
-                <svg class="dartboard" viewBox="0 0 500 500">
-                    <defs>
-                        <radialGradient id="boardGradient">
-                            <stop offset="0%" style="stop-color:#2a2a2a"/>
-                            <stop offset="100%" style="stop-color:#1a1a1a"/>
-                        </radialGradient>
-                    </defs>
-                    <circle cx="250" cy="250" r="246" fill="url(#boardGradient)" stroke="#444" stroke-width="3"/>
-                    <g id="segments"></g>
-                </svg>
-                <div id="board-numbers"></div>
-                <div class="bullseye outer-bull" onclick="handleScore(25, 1)"></div>
-                <div class="bullseye inner-bull" onclick="handleScore(50, 1)"></div>
-            </div>
+      <h1>🎯 501 Darts</h1>
 
-            <div class="score-panel">
-                <div id="player1" class="player active">
-                    <div class="player-name">Player 1</div>
-                    <div class="player-score">501</div>
-                    <div class="throw-history">Last throws: -</div>
-                </div>
-
-                <div id="player2" class="player">
-                    <div class="player-name">Player 2</div>
-                    <div class="player-score">501</div>
-                    <div class="throw-history">Last throws: -</div>
-                </div>
-
-                <div class="current-throw">
-                    <strong>Current Throw:</strong>
-                    <div class="throw-display" id="currentThrow">Click dartboard to throw</div>
-                    <div style="margin-top: 10px; font-size: 0.9em;">Darts: <span id="dartCount">0/3</span></div>
-                </div>
-
-                <div class="controls">
-                    <button class="undo-btn" onclick="undoThrow()">↶ Undo</button>
-                    <button class="next-btn" onclick="nextPlayer()">Next Player →</button>
-                </div>
-                <button class="reset-btn" style="background: #f39c12; margin-top: 10px; margin-bottom: 10px;" onclick="recordMiss()">❌ Miss</button>
-                <button class="reset-btn" onclick="resetGame()">🔄 New Game</button>
-
-                <div class="instructions">
-                    <strong>How to Play:</strong><br>
-                    • Click segments to score<br>
-                    • 3 darts per turn<br>
-                    • Must finish exactly on 0<br>
-                    • Must finish on a double
-                </div>
-            </div>
+      <div class="game-area">
+        <div class="dartboard-container">
+          <svg class="dartboard" viewBox="0 0 500 500">
+            <defs>
+              <radialGradient id="boardGradient">
+                <stop offset="0%" style="stop-color: #2a2a2a" />
+                <stop offset="100%" style="stop-color: #1a1a1a" />
+              </radialGradient>
+            </defs>
+            <circle
+              cx="250"
+              cy="250"
+              r="246"
+              fill="url(#boardGradient)"
+              stroke="#444"
+              stroke-width="3"
+            />
+            <g id="segments"></g>
+          </svg>
+          <div id="board-numbers"></div>
+          <div class="bullseye outer-bull" onclick="handleScore(25, 1)"></div>
+          <div class="bullseye inner-bull" onclick="handleScore(50, 1)"></div>
         </div>
+
+        <div class="score-panel">
+          <div id="player1" class="player active">
+            <div class="player-name">Player 1</div>
+            <div
+              class="player-score"
+              onclick="editScore(0)"
+              title="Click to edit score"
+            >
+              501
+            </div>
+            <div class="throw-history">Last throws: -</div>
+          </div>
+
+          <div id="player2" class="player">
+            <div class="player-name">Player 2</div>
+            <div
+              class="player-score"
+              onclick="editScore(1)"
+              title="Click to edit score"
+            >
+              501
+            </div>
+            <div class="throw-history">Last throws: -</div>
+          </div>
+
+          <div class="current-throw">
+            <strong>Current Throw:</strong>
+            <div class="throw-display" id="currentThrow">
+              Click dartboard to throw
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9em">
+              Darts: <span id="dartCount">0/3</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button class="undo-btn" onclick="undoThrow()">↶ Undo</button>
+            <button class="next-btn" onclick="nextPlayer()">
+              Next Player →
+            </button>
+          </div>
+          <button
+            class="reset-btn"
+            style="background: #f39c12; margin-top: 10px; margin-bottom: 10px"
+            onclick="recordMiss()"
+          >
+            ❌ Miss
+          </button>
+          <button class="reset-btn" onclick="resetGame()">🔄 New Game</button>
+
+          <div class="instructions">
+            <strong>How to Play:</strong><br />
+            • Click segments to score<br />
+            • 3 darts per turn<br />
+            • Must finish exactly on 0<br />
+            • Must finish on a double
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        const dartNumbers = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
-        
-        let gameState = {
-            players: [
-                { score: 501, history: [] },
-                { score: 501, history: [] }
-            ],
-            currentPlayer: 0,
-            currentThrow: [],
-            winner: null
-        };
+      const dartNumbers = [
+        20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5,
+      ];
 
-        function createDartboard() {
-            const svg = document.getElementById('segments');
-            const centerX = 250;
-            const centerY = 250;
-            
-            // Create segments - 20 is at the top
-            for (let i = 0; i < 20; i++) {
-                const number = dartNumbers[i];
-                const startAngle = -99 + (i * 18);
-                const endAngle = startAngle + 18;
-                
-                const isBlack = i % 2 === 0;
-                const singleColor = isBlack ? '#000000' : '#f5f5dc';
-                const doubleColor = isBlack ? '#dc143c' : '#00a650';
-                const trebleColor = isBlack ? '#dc143c' : '#00a650';
-                
-                // Draw all segments
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 228, 245, doubleColor, number, 2);
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 170, 228, singleColor, number, 1);
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 115, 135, trebleColor, number, 3);
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 135, 170, singleColor, number, 1);
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 95, 115, singleColor, number, 1);
-                createSegmentPath(svg, centerX, centerY, startAngle, endAngle, 20, 95, singleColor, number, 1);
-            }
-            
-            // Add wire lines
-            for (let i = 0; i < 20; i++) {
-                const angle = -99 + (i * 18);
-                const x1 = centerX + 20 * Math.cos(angle * Math.PI / 180);
-                const y1 = centerY + 20 * Math.sin(angle * Math.PI / 180);
-                const x2 = centerX + 245 * Math.cos(angle * Math.PI / 180);
-                const y2 = centerY + 245 * Math.sin(angle * Math.PI / 180);
-                
-                svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
-                    stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
-            }
-            
-            // Add circular wires
-            [95, 170, 228].forEach(r => {
-                svg.innerHTML += `<circle cx="${centerX}" cy="${centerY}" r="${r}" 
-                    fill="none" stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
-            });
-            
-            // Add numbers around exterior
-            const numbersContainer = document.getElementById('board-numbers');
-            dartNumbers.forEach((num, i) => {
-                const angle = -99 + (i * 18) + 9;
-                const radius = 280;
-                const x = 300 + radius * Math.cos(angle * Math.PI / 180);
-                const y = 300 + radius * Math.sin(angle * Math.PI / 180);
-                
-                const numberDiv = document.createElement('div');
-                numberDiv.className = 'board-number';
-                numberDiv.textContent = num;
-                numberDiv.style.left = `${x}px`;
-                numberDiv.style.top = `${y}px`;
-                numberDiv.style.transform = 'translate(-50%, -50%)';
-                numbersContainer.appendChild(numberDiv);
-            });
+      let gameState = {
+        players: [
+          { score: 501, history: [] },
+          { score: 501, history: [] },
+        ],
+        currentPlayer: 0,
+        currentThrow: [],
+        winner: null,
+      };
+
+      function createDartboard() {
+        const svg = document.getElementById("segments");
+        const centerX = 250;
+        const centerY = 250;
+
+        // Create segments - 20 is at the top
+        for (let i = 0; i < 20; i++) {
+          const number = dartNumbers[i];
+          const startAngle = -99 + i * 18;
+          const endAngle = startAngle + 18;
+
+          const isBlack = i % 2 === 0;
+          const singleColor = isBlack ? "#000000" : "#f5f5dc";
+          const doubleColor = isBlack ? "#dc143c" : "#00a650";
+          const trebleColor = isBlack ? "#dc143c" : "#00a650";
+
+          // Draw all segments
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            228,
+            245,
+            doubleColor,
+            number,
+            2,
+          );
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            170,
+            228,
+            singleColor,
+            number,
+            1,
+          );
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            115,
+            135,
+            trebleColor,
+            number,
+            3,
+          );
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            135,
+            170,
+            singleColor,
+            number,
+            1,
+          );
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            95,
+            115,
+            singleColor,
+            number,
+            1,
+          );
+          createSegmentPath(
+            svg,
+            centerX,
+            centerY,
+            startAngle,
+            endAngle,
+            20,
+            95,
+            singleColor,
+            number,
+            1,
+          );
         }
 
-        function createSegmentPath(svg, cx, cy, startAngle, endAngle, innerR, outerR, color, number, multiplier) {
-            const startRad = startAngle * Math.PI / 180;
-            const endRad = endAngle * Math.PI / 180;
-            
-            const x1 = cx + innerR * Math.cos(startRad);
-            const y1 = cy + innerR * Math.sin(startRad);
-            const x2 = cx + outerR * Math.cos(startRad);
-            const y2 = cy + outerR * Math.sin(startRad);
-            const x3 = cx + outerR * Math.cos(endRad);
-            const y3 = cy + outerR * Math.sin(endRad);
-            const x4 = cx + innerR * Math.cos(endRad);
-            const y4 = cy + innerR * Math.sin(endRad);
-            
-            const largeArc = 0;
-            
-            const path = `M ${x1} ${y1} 
+        // Add wire lines
+        for (let i = 0; i < 20; i++) {
+          const angle = -99 + i * 18;
+          const x1 = centerX + 20 * Math.cos((angle * Math.PI) / 180);
+          const y1 = centerY + 20 * Math.sin((angle * Math.PI) / 180);
+          const x2 = centerX + 245 * Math.cos((angle * Math.PI) / 180);
+          const y2 = centerY + 245 * Math.sin((angle * Math.PI) / 180);
+
+          svg.innerHTML += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
+                    stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
+        }
+
+        // Add circular wires
+        [95, 170, 228].forEach((r) => {
+          svg.innerHTML += `<circle cx="${centerX}" cy="${centerY}" r="${r}" 
+                    fill="none" stroke="#888" stroke-width="1.5" style="pointer-events: none;"/>`;
+        });
+
+        // Add numbers around exterior
+        const numbersContainer = document.getElementById("board-numbers");
+        dartNumbers.forEach((num, i) => {
+          const angle = -99 + i * 18 + 9;
+          const radius = 280;
+          const x = 300 + radius * Math.cos((angle * Math.PI) / 180);
+          const y = 300 + radius * Math.sin((angle * Math.PI) / 180);
+
+          const numberDiv = document.createElement("div");
+          numberDiv.className = "board-number";
+          numberDiv.textContent = num;
+          numberDiv.style.left = `${x}px`;
+          numberDiv.style.top = `${y}px`;
+          numberDiv.style.transform = "translate(-50%, -50%)";
+          numbersContainer.appendChild(numberDiv);
+        });
+      }
+
+      function createSegmentPath(
+        svg,
+        cx,
+        cy,
+        startAngle,
+        endAngle,
+        innerR,
+        outerR,
+        color,
+        number,
+        multiplier,
+      ) {
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
+
+        const x1 = cx + innerR * Math.cos(startRad);
+        const y1 = cy + innerR * Math.sin(startRad);
+        const x2 = cx + outerR * Math.cos(startRad);
+        const y2 = cy + outerR * Math.sin(startRad);
+        const x3 = cx + outerR * Math.cos(endRad);
+        const y3 = cy + outerR * Math.sin(endRad);
+        const x4 = cx + innerR * Math.cos(endRad);
+        const y4 = cy + innerR * Math.sin(endRad);
+
+        const largeArc = 0;
+
+        const path = `M ${x1} ${y1} 
                          L ${x2} ${y2} 
                          A ${outerR} ${outerR} 0 ${largeArc} 1 ${x3} ${y3} 
                          L ${x4} ${y4} 
                          A ${innerR} ${innerR} 0 ${largeArc} 0 ${x1} ${y1} Z`;
-            
-            svg.innerHTML += `<path d="${path}" fill="${color}" stroke="#888" stroke-width="0.5"
+
+        svg.innerHTML += `<path d="${path}" fill="${color}" stroke="#888" stroke-width="0.5"
                 onclick="handleScore(${number}, ${multiplier})" 
                 style="cursor: pointer;" 
                 onmouseover="this.style.opacity='0.7'" 
                 onmouseout="this.style.opacity='1'"/>`;
+      }
+
+      function handleScore(number, multiplier) {
+        if (gameState.winner || gameState.currentThrow.length >= 3) return;
+
+        const score = number * multiplier;
+        const player = gameState.players[gameState.currentPlayer];
+        const newScore = player.score - score;
+
+        // Bust if going below 0 or landing on exactly 1
+        if (newScore < 0 || newScore === 1) {
+          gameState.currentThrow.push({
+            score,
+            number,
+            multiplier,
+            bust: true,
+          });
+          updateDisplay();
+          setTimeout(() => {
+            alert(
+              "BUST! Cannot go below 0 or land on 1. Score reset to start of turn.",
+            );
+            nextPlayer();
+          }, 300);
+          return;
         }
 
-        function handleScore(number, multiplier) {
-            if (gameState.winner || gameState.currentThrow.length >= 3) return;
-            
-            const score = number * multiplier;
-            const player = gameState.players[gameState.currentPlayer];
-            const newScore = player.score - score;
-            
-            // Bust if going below 0 or landing on exactly 1
-            if (newScore < 0 || newScore === 1) {
-                gameState.currentThrow.push({ score, number, multiplier, bust: true });
-                updateDisplay();
-                setTimeout(() => {
-                    alert('BUST! Cannot go below 0 or land on 1. Score reset to start of turn.');
-                    nextPlayer();
-                }, 300);
-                return;
-            }
-            
-            if (newScore === 0 && multiplier !== 2) {
-                gameState.currentThrow.push({ score, number, multiplier, bust: true });
-                updateDisplay();
-                setTimeout(() => {
-                    alert('Must finish on a double!');
-                    nextPlayer();
-                }, 300);
-                return;
-            }
-            
-            gameState.currentThrow.push({ score, number, multiplier });
-            
-            if (newScore === 0) {
-                player.score = 0;
-                gameState.winner = gameState.currentPlayer;
-                updateDisplay();
-                showWinner();
-                return;
-            }
-            
-            updateDisplay();
-            
-            if (gameState.currentThrow.length === 3) {
-                setTimeout(nextPlayer, 1000);
-            }
+        if (newScore === 0 && multiplier !== 2) {
+          gameState.currentThrow.push({
+            score,
+            number,
+            multiplier,
+            bust: true,
+          });
+          updateDisplay();
+          setTimeout(() => {
+            alert("Must finish on a double!");
+            nextPlayer();
+          }, 300);
+          return;
         }
 
-        function updateDisplay() {
-            const player = gameState.players[gameState.currentPlayer];
-            let tempScore = player.score;
-            
-            gameState.currentThrow.forEach(t => {
-                if (!t.bust) tempScore -= t.score;
-            });
-            
-            const throwText = gameState.currentThrow.map(t => {
-                if (t.miss) return 'Miss';
-                const prefix = t.multiplier === 2 ? 'D' : t.multiplier === 3 ? 'T' : '';
-                return `${prefix}${t.number}${t.bust ? ' (BUST)' : ''}`;
-            }).join(', ') || 'Click dartboard to throw';
-            
-            document.getElementById('currentThrow').textContent = throwText;
-            document.getElementById('dartCount').textContent = `${gameState.currentThrow.length}/3`;
-            
-            gameState.players.forEach((p, i) => {
-                const scoreEl = document.querySelector(`#player${i+1} .player-score`);
-                const historyEl = document.querySelector(`#player${i+1} .throw-history`);
-                
-                if (i === gameState.currentPlayer && gameState.currentThrow.length > 0) {
-                    scoreEl.textContent = tempScore;
-                } else {
-                    scoreEl.textContent = p.score;
-                }
-                
-                const lastThrow = p.history[p.history.length - 1];
-                historyEl.textContent = lastThrow ? `Last throws: ${lastThrow.join(', ')} = ${lastThrow.reduce((a,b) => {
-                    const match = b.match(/\d+/);
-                    return a + (match ? parseInt(match[0]) * (b.includes('T') ? 3 : b.includes('D') ? 2 : 1) : 0);
-                }, 0)}` : 'Last throws: -';
-            });
-            
-            document.querySelectorAll('.player').forEach((el, i) => {
-                el.classList.toggle('active', i === gameState.currentPlayer);
-            });
+        gameState.currentThrow.push({ score, number, multiplier });
+
+        if (newScore === 0) {
+          player.score = 0;
+          gameState.winner = gameState.currentPlayer;
+          updateDisplay();
+          showWinner();
+          return;
         }
 
-        function undoThrow() {
-            if (gameState.currentThrow.length > 0) {
-                gameState.currentThrow.pop();
-                updateDisplay();
-            }
-        }
-
-        function recordMiss() {
-            if (gameState.winner || gameState.currentThrow.length >= 3) return;
-            
-            gameState.currentThrow.push({ score: 0, number: 0, multiplier: 0, miss: true });
-            updateDisplay();
-            
-            if (gameState.currentThrow.length === 3) {
-                setTimeout(nextPlayer, 1000);
-            }
-        }
-
-        function nextPlayer() {
-            const player = gameState.players[gameState.currentPlayer];
-            
-            const turnTotal = gameState.currentThrow.reduce((sum, t) => sum + (t.bust ? 0 : t.score), 0);
-            
-            if (!gameState.currentThrow.some(t => t.bust)) {
-                player.score -= turnTotal;
-            }
-            
-            if (gameState.currentThrow.length > 0) {
-                const throwRecord = gameState.currentThrow.map(t => {
-                    if (t.miss) return 'Miss';
-                    const prefix = t.multiplier === 2 ? 'D' : t.multiplier === 3 ? 'T' : '';
-                    return `${prefix}${t.number}`;
-                });
-                player.history.push(throwRecord);
-            }
-            
-            gameState.currentThrow = [];
-            gameState.currentPlayer = (gameState.currentPlayer + 1) % 2;
-            updateDisplay();
-        }
-
-        function resetGame() {
-            gameState = {
-                players: [
-                    { score: 501, history: [] },
-                    { score: 501, history: [] }
-                ],
-                currentPlayer: 0,
-                currentThrow: [],
-                winner: null
-            };
-            
-            const winnerEl = document.querySelector('.winner-message');
-            if (winnerEl) winnerEl.remove();
-            
-            updateDisplay();
-        }
-
-        function showWinner() {
-            const msg = document.createElement('div');
-            msg.className = 'winner-message';
-            msg.innerHTML = `🎉 Player ${gameState.currentPlayer + 1} Wins! 🎉`;
-            document.body.appendChild(msg);
-        }
-
-        createDartboard();
         updateDisplay();
+
+        if (gameState.currentThrow.length === 3) {
+          setTimeout(nextPlayer, 1000);
+        }
+      }
+
+      function updateDisplay() {
+        const player = gameState.players[gameState.currentPlayer];
+        let tempScore = player.score;
+
+        gameState.currentThrow.forEach((t) => {
+          if (!t.bust) tempScore -= t.score;
+        });
+
+        const throwText =
+          gameState.currentThrow
+            .map((t) => {
+              if (t.miss) return "Miss";
+              const prefix =
+                t.multiplier === 2 ? "D" : t.multiplier === 3 ? "T" : "";
+              return `${prefix}${t.number}${t.bust ? " (BUST)" : ""}`;
+            })
+            .join(", ") || "Click dartboard to throw";
+
+        document.getElementById("currentThrow").textContent = throwText;
+        document.getElementById("dartCount").textContent =
+          `${gameState.currentThrow.length}/3`;
+
+        gameState.players.forEach((p, i) => {
+          const scoreEl = document.querySelector(
+            `#player${i + 1} .player-score`,
+          );
+          const historyEl = document.querySelector(
+            `#player${i + 1} .throw-history`,
+          );
+
+          if (
+            i === gameState.currentPlayer &&
+            gameState.currentThrow.length > 0
+          ) {
+            scoreEl.textContent = tempScore;
+          } else {
+            scoreEl.textContent = p.score;
+          }
+
+          // Ensure click handler is attached
+          scoreEl.onclick = function () {
+            editScore(i);
+          };
+          scoreEl.style.cursor = "pointer";
+
+          const lastThrow = p.history[p.history.length - 1];
+          historyEl.textContent = lastThrow
+            ? `Last throws: ${lastThrow.join(", ")} = ${lastThrow.reduce(
+                (a, b) => {
+                  const match = b.match(/\d+/);
+                  return (
+                    a +
+                    (match
+                      ? parseInt(match[0]) *
+                        (b.includes("T") ? 3 : b.includes("D") ? 2 : 1)
+                      : 0)
+                  );
+                },
+                0,
+              )}`
+            : "Last throws: -";
+        });
+
+        document.querySelectorAll(".player").forEach((el, i) => {
+          el.classList.toggle("active", i === gameState.currentPlayer);
+        });
+      }
+
+      function undoThrow() {
+        if (gameState.currentThrow.length > 0) {
+          gameState.currentThrow.pop();
+          updateDisplay();
+        }
+      }
+
+      function recordMiss() {
+        if (gameState.winner || gameState.currentThrow.length >= 3) return;
+
+        gameState.currentThrow.push({
+          score: 0,
+          number: 0,
+          multiplier: 0,
+          miss: true,
+        });
+        updateDisplay();
+
+        if (gameState.currentThrow.length === 3) {
+          setTimeout(nextPlayer, 1000);
+        }
+      }
+
+      function editScore(playerIndex) {
+        // Create overlay
+        const overlay = document.createElement("div");
+        overlay.className = "overlay";
+
+        // Create popup
+        const popup = document.createElement("div");
+        popup.className = "score-edit-popup";
+        popup.innerHTML = `
+                <h3>Edit Player ${playerIndex + 1} Score</h3>
+                <input type="number" id="scoreInput" min="0" max="501" value="${gameState.players[playerIndex].score}" autofocus>
+                <div class="score-edit-buttons">
+                    <button class="undo-btn" onclick="closeScoreEdit()">Cancel</button>
+                    <button class="next-btn" onclick="saveScore(${playerIndex})">Save</button>
+                </div>
+            `;
+
+        document.body.appendChild(overlay);
+        document.body.appendChild(popup);
+
+        // Focus and select the input
+        setTimeout(() => {
+          const input = document.getElementById("scoreInput");
+          input.focus();
+          input.select();
+
+          // Allow Enter key to save
+          input.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              saveScore(playerIndex);
+            }
+          });
+        }, 100);
+
+        // Click overlay to close
+        overlay.onclick = closeScoreEdit;
+      }
+
+      function closeScoreEdit() {
+        const overlay = document.querySelector(".overlay");
+        const popup = document.querySelector(".score-edit-popup");
+        if (overlay) overlay.remove();
+        if (popup) popup.remove();
+      }
+
+      function saveScore(playerIndex) {
+        const input = document.getElementById("scoreInput");
+        const newScore = parseInt(input.value);
+
+        if (!isNaN(newScore) && newScore >= 0 && newScore <= 501) {
+          gameState.players[playerIndex].score = newScore;
+          updateDisplay();
+          closeScoreEdit();
+        } else {
+          alert("Please enter a valid score between 0 and 501");
+        }
+      }
+
+      function nextPlayer() {
+        const player = gameState.players[gameState.currentPlayer];
+
+        const turnTotal = gameState.currentThrow.reduce(
+          (sum, t) => sum + (t.bust ? 0 : t.score),
+          0,
+        );
+
+        if (!gameState.currentThrow.some((t) => t.bust)) {
+          player.score -= turnTotal;
+        }
+
+        if (gameState.currentThrow.length > 0) {
+          const throwRecord = gameState.currentThrow.map((t) => {
+            if (t.miss) return "Miss";
+            const prefix =
+              t.multiplier === 2 ? "D" : t.multiplier === 3 ? "T" : "";
+            return `${prefix}${t.number}`;
+          });
+          player.history.push(throwRecord);
+        }
+
+        gameState.currentThrow = [];
+        gameState.currentPlayer = (gameState.currentPlayer + 1) % 2;
+        updateDisplay();
+      }
+
+      function resetGame() {
+        gameState = {
+          players: [
+            { score: 501, history: [] },
+            { score: 501, history: [] },
+          ],
+          currentPlayer: 0,
+          currentThrow: [],
+          winner: null,
+        };
+
+        const winnerEl = document.querySelector(".winner-message");
+        if (winnerEl) winnerEl.remove();
+
+        updateDisplay();
+      }
+
+      function showWinner() {
+        const msg = document.createElement("div");
+        msg.className = "winner-message";
+        msg.innerHTML = `🎉 Player ${gameState.currentPlayer + 1} Wins! 🎉`;
+        document.body.appendChild(msg);
+      }
+
+      createDartboard();
+      updateDisplay();
     </script>
-</body>
+  </body>
 </html>
