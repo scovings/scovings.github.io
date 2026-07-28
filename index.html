@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recipe Box</title>
+<title>Daniel's Recipes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -14,8 +14,8 @@
   <!-- LEFT RAIL -->
   <div class="rail">
     <div class="rail-brand">
-      <h1>Recipe Box</h1>
-      <div class="sub">your kitchen, kept</div>
+      <h1>Daniel's Recipes</h1>
+      <div class="sub">For your delish.</div>
     </div>
     <div class="search-wrap">
       <input type="text" id="searchInput" placeholder="Search recipes or ingredients...">
@@ -23,12 +23,37 @@
     <div class="tab-list" id="tabList"></div>
     <div class="rail-footer">
       <button class="btn-new" id="newRecipeBtn">+ New Recipe</button>
+      <button class="btn-new" id="addCategoryBtn" type="button">+ Category</button>
+      <button class="btn-secondary" id="exportBtn" type="button">Export</button>
+      <button class="btn-secondary" id="importBtn" type="button">Import</button>
+      <button class="btn-secondary" id="resetBtn" type="button">Reset</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
     </div>
   </div>
 
   <!-- MAIN STAGE -->
   <div class="stage">
+    <button class="nav-arrow nav-left" id="prevRecipeBtn" aria-label="Previous recipe">‹</button>
     <div class="stage-inner" id="stageInner"></div>
+    <button class="nav-arrow nav-right" id="nextRecipeBtn" aria-label="Next recipe">›</button>
+  </div>
+</div>
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+<div id="contextMenu" class="context-menu" role="menu"></div>
+<div id="modalOverlay" class="modal-overlay" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+      <button id="modalCloseBtn" class="icon-btn" aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="modalMessage"></p>
+      <input id="modalInput" type="text" placeholder="" />
+    </div>
+    <div class="modal-actions">
+      <button id="modalCancelBtn" class="btn-secondary" type="button">Cancel</button>
+      <button id="modalConfirmBtn" class="btn-primary" type="button">Create</button>
+    </div>
   </div>
 </div>
 
