@@ -15,10 +15,14 @@
   <div class="rail">
     <div class="rail-brand">
       <h1>Daniel's Recipes</h1>
-      <div class="sub">For your delish.</div>
+      <div class="sub">For dinner.</div>
     </div>
     <div class="search-wrap">
       <input type="text" id="searchInput" placeholder="Search recipes or ingredients...">
+    </div>
+    <div class="sync-row">
+      <span id="syncStatus" class="sync-status">Storage: local browser storage</span>
+      <button class="btn-secondary sync-btn" id="syncCloudBtn" type="button">Sync</button>
     </div>
     <div class="tab-list" id="tabList"></div>
     <div class="rail-footer">
@@ -57,6 +61,20 @@
   </div>
 </div>
 
+<script>
+  window.RECIPE_DB_CONFIG = window.RECIPE_DB_CONFIG || {
+    enabled: false,
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    storageBucket: '',
+    messagingSenderId: '',
+    appId: ''
+  };
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

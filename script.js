@@ -1,5 +1,8 @@
 (function(){
   const STORAGE_KEY = 'recipeBoxData_v1';
+  const REMOTE_CONFIG = (window.RECIPE_DB_CONFIG && typeof window.RECIPE_DB_CONFIG === 'object')
+    ? window.RECIPE_DB_CONFIG
+    : {};
 
   let state = {
     recipes: [],
@@ -9,7 +12,123 @@
     activeTag: 'All'
   };
 
-  function load() {
+  function normalizeRecipeData(payload) {
+    const rawRecipes = Array.isArray(payload?.recipes)
+      ? payload.recipes
+      : Array.isArray(payload)
+        ? payload
+        : [];
+
+    const normalizedRecipes = rawRecipes.map(r => ({
+      id: r.id || uid(),
+      title: r.title || 'Untitled recipe',
+      description: r.description || '',
+      category: r.category || 'Uncategorized',
+      tags: Array.isArray(r.tags) ? r.tags.map(String) : [],
+      prepTime: r.prepTime || '',
+      cookTime: r.cookTime || '',
+      baseServings: Number.isFinite(r.baseServings) ? r.baseServings : 1,
+      currentServings: r.currentServings || null,
+      ingredients: Array.isArray(r.ingredients) ? r.ingredients.map(i => ({
+        amount: i.amount == null ? null : parseFloat(i.amount),
+        unit: i.unit || '',
+        name: i.name || ''
+      })) : [],
+      steps: Array.isArray(r.steps) ? r.steps.map(String) : [],
+      notes: r.notes || ''
+    }));
+
+    const categories = Array.isArray(payload?.categories)
+      ? payload.categories
+      : Array.from(new Set(normalizedRecipes.map(r => r.category || 'Uncategorized').filter(Boolean)));
+
+    return {
+      recipes: normalizedRecipes,
+      categories
+    };
+  }
+
+  let remoteDb = null;
+  let remoteDocRef = null;
+  let remoteReady = false;
+
+  function setStorageStatus(mode, message) {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    el.textContent = mode === 'cloud'
+      ? `Cloud sync: ${message}`
+      : `Storage: ${message}`;
+    el.classList.toggle('is-cloud', mode === 'cloud');
+  }
+
+  function isRemoteConfigured() {
+    return Boolean(
+      REMOTE_CONFIG.enabled &&
+      REMOTE_CONFIG.apiKey &&
+      REMOTE_CONFIG.authDomain &&
+      REMOTE_CONFIG.projectId &&
+      REMOTE_CONFIG.appId
+    );
+  }
+
+  async function initRemoteStorage() {
+    if (!isRemoteConfigured() || !window.firebase) {
+      setStorageStatus('local', 'local browser storage');
+      return;
+    }
+
+    try {
+      if (!window.firebase.apps.length) {
+        window.firebase.initializeApp({
+          apiKey: REMOTE_CONFIG.apiKey,
+          authDomain: REMOTE_CONFIG.authDomain,
+          projectId: REMOTE_CONFIG.projectId,
+          storageBucket: REMOTE_CONFIG.storageBucket || '',
+          messagingSenderId: REMOTE_CONFIG.messagingSenderId || '',
+          appId: REMOTE_CONFIG.appId
+        });
+      }
+
+      remoteDb = window.firebase.firestore();
+      remoteDocRef = remoteDb.collection('recipeBox').doc('main');
+      await window.firebase.auth().signInAnonymously();
+      remoteReady = true;
+
+      const snap = await remoteDocRef.get();
+      if (snap.exists) {
+        const data = snap.data();
+        if (Array.isArray(data.recipes) && !state.recipes.length) {
+          state.recipes = data.recipes;
+          state.categories = Array.isArray(data.categories) ? data.categories : [];
+          if (!state.activeId && state.recipes.length) {
+            state.activeId = state.recipes[0].id;
+          }
+          setStorageStatus('cloud', 'remote data loaded');
+        }
+      } else {
+        setStorageStatus('cloud', 'ready to sync');
+      }
+
+      save();
+    } catch (error) {
+      console.error('Could not connect to remote storage:', error);
+      remoteReady = false;
+      setStorageStatus('local', 'offline / not configured');
+    }
+  }
+
+  async function loadRemoteData() {
+    try {
+      const response = await fetch('./recipes.json', { cache: 'no-store' });
+      if (!response.ok) return null;
+      const payload = await response.json();
+      return normalizeRecipeData(payload);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -17,13 +136,9 @@
         state.categories = [];
       } else {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          state.recipes = parsed;
-          state.categories = [];
-        } else {
-          state.recipes = Array.isArray(parsed.recipes) ? parsed.recipes : [];
-          state.categories = Array.isArray(parsed.categories) ? parsed.categories : [];
-        }
+        const normalized = normalizeRecipeData(parsed);
+        state.recipes = normalized.recipes;
+        state.categories = normalized.categories;
       }
     } catch (e) {
       console.error('Could not load recipe box data:', e);
@@ -31,9 +146,19 @@
       state.categories = [];
     }
 
+    if (!state.recipes.length) {
+      const remoteData = await loadRemoteData();
+      if (remoteData) {
+        state.recipes = remoteData.recipes;
+        state.categories = remoteData.categories;
+      }
+    }
+
     if (!state.activeId && state.recipes.length) {
       state.activeId = state.recipes[0].id;
     }
+
+    await initRemoteStorage();
   }
 
   function save() {
@@ -42,6 +167,16 @@
         recipes: state.recipes,
         categories: state.categories
       }));
+
+      if (remoteReady && remoteDocRef) {
+        remoteDocRef.set({
+          recipes: state.recipes,
+          categories: state.categories,
+          updatedAt: Date.now()
+        }).catch((error) => {
+          console.error('Could not sync to remote storage:', error);
+        });
+      }
     } catch (e) {
       console.error('Could not save recipe box data:', e);
       showToast('Could not save - your browser storage may be full or disabled.', 'error');
@@ -49,7 +184,12 @@
   }
 
   function exportRecipes() {
-    const data = JSON.stringify(state.recipes, null, 2);
+    const payload = {
+      recipes: state.recipes,
+      categories: state.categories,
+      exportedAt: new Date().toISOString()
+    };
+    const data = JSON.stringify(payload, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -59,7 +199,7 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('Recipe export started.', 'success');
+    showToast('Exported recipes.json. Commit it to GitHub to publish.', 'success');
   }
 
   function importRecipes(file) {
@@ -67,29 +207,10 @@
     reader.onload = () => {
       try {
         const imported = JSON.parse(reader.result);
-        if (!Array.isArray(imported)) {
-          throw new Error('Import must be a JSON array of recipes.');
-        }
+        const normalized = normalizeRecipeData(imported);
 
-        state.recipes = imported.map(r => ({
-          id: r.id || uid(),
-          title: r.title || 'Untitled recipe',
-          description: r.description || '',
-          category: r.category || 'Uncategorized',
-          tags: Array.isArray(r.tags) ? r.tags.map(String) : [],
-          prepTime: r.prepTime || '',
-          cookTime: r.cookTime || '',
-          baseServings: Number.isFinite(r.baseServings) ? r.baseServings : 1,
-          currentServings: r.currentServings || null,
-          ingredients: Array.isArray(r.ingredients) ? r.ingredients.map(i => ({
-            amount: i.amount == null ? null : parseFloat(i.amount),
-            unit: i.unit || '',
-            name: i.name || ''
-          })) : [],
-          steps: Array.isArray(r.steps) ? r.steps.map(String) : [],
-          notes: r.notes || ''
-        }));
-
+        state.recipes = normalized.recipes;
+        state.categories = normalized.categories;
         state.activeId = state.recipes.length ? state.recipes[0].id : null;
         state.filter = '';
         state.activeTag = 'All';
@@ -781,6 +902,14 @@
   });
 
   document.getElementById('exportBtn').addEventListener('click', exportRecipes);
+  document.getElementById('syncCloudBtn')?.addEventListener('click', () => {
+    if (remoteReady && remoteDocRef) {
+      save();
+      showToast('Recipe box synced to cloud.', 'success');
+    } else {
+      showToast('Cloud sync is not ready yet. Configure Firebase first.', 'error');
+    }
+  });
   document.getElementById('importBtn').addEventListener('click', () => {
     document.getElementById('importFile').click();
   });
@@ -798,6 +927,5 @@
     render();
   });
 
-  load();
-  render();
+  load().then(() => render());
 })();
